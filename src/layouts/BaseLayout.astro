@@ -1,0 +1,127 @@
+---
+import '../styles/global.css';
+import CyberHeader from '../components/CyberHeader.astro';
+import CyberFooter from '../components/CyberFooter.astro';
+import NeuralTerminal from '../components/NeuralTerminal.astro';
+import { siteConfig } from '../data/siteConfig';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = `${siteConfig.title} — ${siteConfig.subtitle}`,
+  description = siteConfig.author.bio,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="alternate" type="application/rss+xml" title={siteConfig.title} href="/rss.xml" />
+  </head>
+  <body>
+    <!-- CRT Scanline Layer -->
+    <div class="crt-overlay" aria-hidden="true"></div>
+
+    <!-- Subtle Neural Particle Canvas Background -->
+    <canvas id="neural-bg-canvas" aria-hidden="true"></canvas>
+
+    <CyberHeader />
+
+    <main class="main-content">
+      <slot />
+    </main>
+
+    <NeuralTerminal />
+    <CyberFooter />
+
+    <style>
+      #neural-bg-canvas {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0.45;
+      }
+
+      .main-content {
+        min-height: calc(100vh - 240px);
+        padding-top: 2rem;
+      }
+    </style>
+
+    <script>
+      // Lightweight 60fps Neural Synapse Background Canvas
+      const canvas = document.getElementById('neural-bg-canvas') as HTMLCanvasElement | null;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
+
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+
+        const nodeCount = Math.min(38, Math.floor(width / 36));
+        const nodes = Array.from({ length: nodeCount }, () => ({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.5 + 1,
+        }));
+
+        function animate() {
+          if (!ctx) return;
+          ctx.clearRect(0, 0, width, height);
+
+          const isMatrix = document.body.classList.contains('theme-matrix');
+          const rgb = isMatrix ? '0, 255, 157' : '0, 243, 255';
+
+          for (let i = 0; i < nodes.length; i++) {
+            const a = nodes[i];
+            a.x += a.vx;
+            a.y += a.vy;
+
+            if (a.x < 0 || a.x > width) a.vx *= -1;
+            if (a.y < 0 || a.y > height) a.vy *= -1;
+
+            ctx.beginPath();
+            ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${rgb}, 0.55)`;
+            ctx.fill();
+
+            for (let j = i + 1; j < nodes.length; j++) {
+              const b = nodes[j];
+              const dx = a.x - b.x;
+              const dy = a.y - b.y;
+              const dist = Math.hypot(dx, dy);
+              if (dist < 150) {
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.strokeStyle = `rgba(${rgb}, ${(1 - dist / 150) * 0.16})`;
+                ctx.lineWidth = 0.8;
+                ctx.stroke();
+              }
+            }
+          }
+          requestAnimationFrame(animate);
+        }
+
+        animate();
+      }
+    </script>
+  </body>
+</html>

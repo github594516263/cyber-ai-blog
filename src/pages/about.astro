@@ -1,0 +1,277 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../data/siteConfig';
+---
+
+<BaseLayout title={`个人档案 · ${siteConfig.title}`} description="关于博主的赛博义体配置、技术栈矩阵与数字演进时间线">
+  <div class="cyber-container">
+    <!-- Cyberdeck Identity Card -->
+    <section class="cyber-panel profile-hero">
+      <div class="profile-grid">
+        <div class="avatar-holo">
+          <div class="holo-frame">
+            <span class="holo-code">{siteConfig.author.avatarText}</span>
+            <div class="holo-scanline"></div>
+          </div>
+          <span class="cyber-badge cyber-badge-pink">神经身份：已认证</span>
+        </div>
+
+        <div class="profile-info">
+          <div class="handle-row">
+            <span class="status-dot"></span>
+            <span class="handle-text">{siteConfig.author.handle}</span>
+          </div>
+          <h1 class="author-name">{siteConfig.author.name}</h1>
+          <p class="author-role">{siteConfig.author.role}</p>
+          <p class="author-bio">{siteConfig.author.bio}</p>
+
+          <div class="contact-links">
+            <a href={siteConfig.author.github} target="_blank" rel="noopener noreferrer" class="cyber-btn">
+              GitHub 代码节点
+            </a>
+            <a href={`mailto:${siteConfig.author.email}`} class="cyber-btn cyber-btn-pink">
+              发送神经电讯 ({siteConfig.author.email})
+            </a>
+            <a href="/rss.xml" class="cyber-btn">
+              RSS 订阅源
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="about-dual-grid">
+      <!-- Skill Matrix -->
+      <section class="hud-box spec-panel">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="prefix">01</span>
+            <span>神经技能矩阵 · 同步率遥测</span>
+          </h2>
+        </div>
+
+        <div class="skills-list">
+          {siteConfig.skills.map((skill) => (
+            <div class="skill-item">
+              <div class="skill-meta">
+                <span class="skill-name">{skill.name}</span>
+                <span class="skill-cat">{skill.category} · {skill.level}%</span>
+              </div>
+              <div class="skill-track">
+                <div class="skill-fill" style={`width: ${skill.level}%`}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Evolution Timeline -->
+      <section class="hud-box spec-panel">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="prefix">02</span>
+            <span>数字演进轨迹 · 研发时间线</span>
+          </h2>
+        </div>
+
+        <div class="timeline-list">
+          {siteConfig.timeline.map((item) => (
+            <div class="timeline-node">
+              <div class="node-year">{item.year} · {item.org}</div>
+              <h3 class="node-title">{item.title}</h3>
+              <p class="node-desc">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .profile-hero {
+    padding: 2.25rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2.25rem;
+    align-items: center;
+  }
+
+  .avatar-holo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .holo-frame {
+    position: relative;
+    width: 170px;
+    height: 170px;
+    border: 2px solid var(--neon-cyan);
+    background: radial-gradient(circle, rgba(0, 243, 255, 0.18), rgba(6, 7, 11, 0.95));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 0 25px rgba(0, 243, 255, 0.25);
+  }
+
+  .holo-code {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.45rem;
+    color: var(--neon-cyan);
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 12px var(--neon-cyan);
+  }
+
+  .holo-scanline {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 40%, rgba(255, 0, 85, 0.35) 50%, transparent 60%);
+    background-size: 100% 30px;
+    animation: scan-move 3s linear infinite;
+  }
+
+  @keyframes scan-move {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+
+  .handle-row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--neon-green);
+    margin-bottom: 0.4rem;
+  }
+
+  .author-name {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #fff;
+  }
+
+  .author-role {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--neon-cyan);
+    margin-bottom: 1rem;
+  }
+
+  .author-bio {
+    color: var(--text-secondary);
+    line-height: 1.75;
+    max-width: 680px;
+    margin-bottom: 1.4rem;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .about-dual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .spec-panel {
+    padding: 1.75rem;
+  }
+
+  .skills-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+
+  .skill-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .skill-name {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .skill-cat {
+    color: var(--neon-cyan);
+  }
+
+  .skill-track {
+    height: 7px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+  }
+
+  .skill-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+    box-shadow: 0 0 10px var(--neon-cyan-glow);
+  }
+
+  .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.35rem;
+    border-left: 2px solid rgba(0, 243, 255, 0.3);
+    padding-left: 1.25rem;
+  }
+
+  .timeline-node {
+    position: relative;
+  }
+
+  .timeline-node::before {
+    content: '';
+    position: absolute;
+    left: -1.62rem;
+    top: 0.25rem;
+    width: 10px;
+    height: 10px;
+    background: var(--neon-pink);
+    box-shadow: 0 0 8px var(--neon-pink);
+  }
+
+  .node-year {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--neon-yellow);
+    margin-bottom: 0.2rem;
+  }
+
+  .node-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: #fff;
+    margin-bottom: 0.35rem;
+  }
+
+  .node-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 860px) {
+    .profile-grid,
+    .about-dual-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

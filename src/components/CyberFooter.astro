@@ -1,0 +1,135 @@
+---
+import { siteConfig } from '../data/siteConfig';
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="cyber-footer">
+  <div class="cyber-container footer-grid">
+    <div class="footer-col">
+      <div class="footer-brand">
+        <span class="status-dot"></span>
+        <span class="footer-title">{siteConfig.title} · 神经记忆归档库</span>
+      </div>
+      <p class="footer-desc">
+        基于 <strong>Astro 5 静态生成引擎</strong> + <strong>Markdown 内容集合</strong> 驱动。
+        100% 纯静态预渲染，支持全球边缘节点毫秒级部署。
+      </p>
+      <div class="telemetry-strip">
+        <span>核心模型：{siteConfig.telemetry.modelVersion}</span>
+        <span>•</span>
+        <span>推理延迟：{siteConfig.telemetry.inferenceLatency}</span>
+        <span>•</span>
+        <span>防御状态：{siteConfig.telemetry.securityLevel}</span>
+      </div>
+    </div>
+
+    <div class="footer-col footer-links">
+      <div class="footer-heading">◈ 导航节点矩阵</div>
+      <div class="link-group">
+        <a href="/">首页</a>
+        <a href="/blog">文章归档</a>
+        <a href="/projects">AI 实验室</a>
+        <a href="/about">个人档案</a>
+        <a href="/rss.xml">RSS 订阅源</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="cyber-container footer-bottom">
+    <span>© {currentYear} {siteConfig.author.name}（{siteConfig.author.handle}）· 保留所有数字神经版权</span>
+    <span class="uptime-counter">● 系统状态：运行正常 · 静态边缘节点已就绪</span>
+  </div>
+</footer>
+
+<style>
+  .cyber-footer {
+    margin-top: 5rem;
+    border-top: 1px solid rgba(0, 243, 255, 0.22);
+    background: rgba(5, 7, 12, 0.9);
+    padding: 3rem 0 1.8rem;
+    font-family: var(--font-mono);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.06em;
+  }
+
+  .footer-desc {
+    color: var(--text-secondary);
+    font-size: 0.86rem;
+    max-width: 520px;
+    margin-bottom: 1rem;
+  }
+
+  .telemetry-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    font-size: 0.76rem;
+    color: var(--neon-cyan);
+  }
+
+  .footer-heading {
+    color: var(--neon-pink);
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 0.85rem;
+    letter-spacing: 0.06em;
+  }
+
+  .link-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.35rem;
+  }
+
+  .link-group a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+
+  .link-group a:hover {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px var(--neon-cyan-glow);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+  }
+
+  .uptime-counter {
+    color: var(--neon-green);
+  }
+
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

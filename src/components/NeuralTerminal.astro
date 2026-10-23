@@ -1,0 +1,400 @@
+---
+import { getCollection } from 'astro:content';
+import { siteConfig, categoryLabels } from '../data/siteConfig';
+
+const allPosts = await getCollection('blog');
+const searchIndex = allPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .map((post) => ({
+    slug: post.id,
+    title: post.data.title,
+    category: categoryLabels[post.data.category] || post.data.category,
+    tags: post.data.tags,
+    aiSummary: post.data.aiSummary,
+    serialCode: post.data.serialCode,
+    confidence: post.data.confidence,
+  }));
+---
+
+<div
+  id="neural-terminal-backdrop"
+  class="terminal-backdrop hidden"
+  data-posts={JSON.stringify(searchIndex)}
+  data-author={JSON.stringify(siteConfig.author)}
+>
+  <div class="cyber-panel terminal-modal" role="dialog" aria-modal="true" aria-label="AI 神经命令终端">
+    <div class="terminal-topbar">
+      <div class="topbar-left">
+        <span class="status-dot"></span>
+        <span class="terminal-title">中枢智脑 Ω · 神经命令与语义检索终端</span>
+      </div>
+      <div class="topbar-right">
+        <span class="kbd-hint">按 ESC 关闭</span>
+        <button id="close-terminal-btn" type="button" class="close-btn">✕</button>
+      </div>
+    </div>
+
+    <div class="terminal-input-row">
+      <span class="prompt-prefix">访客@赛博终端:~#</span>
+      <input
+        id="terminal-input"
+        type="text"
+        placeholder="输入关键词实时搜索文章，或点击下方快捷指令..."
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="quick-cmd-bar">
+      <span class="cmd-label">快捷指令：</span>
+      <button type="button" class="quick-cmd" data-cmd="/帮助">/帮助</button>
+      <button type="button" class="quick-cmd" data-cmd="/全部文章">/全部文章</button>
+      <button type="button" class="quick-cmd" data-cmd="/博主档案">/博主档案</button>
+      <button type="button" class="quick-cmd" data-cmd="/随机跃迁">/随机跃迁</button>
+      <button type="button" class="quick-cmd" data-cmd="/切换主题">/切换主题</button>
+    </div>
+
+    <div id="terminal-output" class="terminal-output">
+      <!-- Dynamic results or CLI output rendered here -->
+    </div>
+
+    <div class="terminal-footer">
+      <span>已索引节点：{searchIndex.length} 篇 Markdown 档案</span>
+      <span>引擎模式：端侧混合语义检索</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .terminal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background: rgba(4, 6, 12, 0.82);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 8vh 1rem 2rem;
+  }
+
+  .terminal-backdrop.hidden {
+    display: none;
+  }
+
+  .terminal-modal {
+    width: 100%;
+    max-width: 720px;
+    background: rgba(8, 12, 22, 0.96);
+    border: 1px solid var(--neon-cyan);
+    box-shadow: 0 0 40px rgba(0, 243, 255, 0.22);
+    overflow: hidden;
+  }
+
+  .terminal-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.15rem;
+    background: rgba(0, 243, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 243, 255, 0.22);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
+
+  .topbar-left,
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .terminal-title {
+    color: var(--neon-cyan);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .kbd-hint {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+  }
+
+  .close-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 0, 85, 0.4);
+    color: var(--neon-pink);
+    padding: 0.1rem 0.45rem;
+    cursor: pointer;
+    font-family: var(--font-mono);
+  }
+
+  .terminal-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.95rem 1.15rem;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.18);
+    background: rgba(4, 7, 14, 0.9);
+  }
+
+  .prompt-prefix {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--neon-pink);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  #terminal-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+  }
+
+  #terminal-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .quick-cmd-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding: 0.55rem 1.15rem;
+    background: rgba(0, 243, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .cmd-label {
+    color: var(--text-muted);
+    margin-right: 0.25rem;
+  }
+
+  .quick-cmd {
+    background: rgba(0, 243, 255, 0.08);
+    border: 1px solid rgba(0, 243, 255, 0.28);
+    color: var(--neon-cyan);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    padding: 0.15rem 0.55rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .quick-cmd:hover {
+    background: var(--neon-cyan);
+    color: #05070c;
+  }
+
+  .terminal-output {
+    max-height: 360px;
+    overflow-y: auto;
+    padding: 0.85rem 1.15rem;
+    font-family: var(--font-mono);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .terminal-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.55rem 1.15rem;
+    border-top: 1px solid rgba(0, 243, 255, 0.15);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    background: rgba(4, 7, 14, 0.95);
+  }
+
+  :global(.term-item) {
+    display: block;
+    text-decoration: none;
+    padding: 0.75rem 0.9rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(0, 243, 255, 0.15);
+    transition: all 0.18s ease;
+  }
+
+  :global(.term-item:hover) {
+    border-color: var(--neon-cyan);
+    background: rgba(0, 243, 255, 0.08);
+    transform: translateX(4px);
+  }
+
+  :global(.term-item-top) {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.74rem;
+    color: var(--neon-cyan);
+    margin-bottom: 0.25rem;
+  }
+
+  :global(.term-item-title) {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.92rem;
+    margin-bottom: 0.25rem;
+  }
+
+  :global(.term-item-desc) {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  :global(.term-cli-box) {
+    padding: 0.85rem;
+    background: rgba(0, 243, 255, 0.05);
+    border-left: 3px solid var(--neon-yellow);
+    color: #e2e8f0;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    white-space: pre-wrap;
+  }
+</style>
+
+<script>
+  const backdrop = document.getElementById('neural-terminal-backdrop');
+  const openBtn = document.getElementById('open-terminal-btn');
+  const closeBtn = document.getElementById('close-terminal-btn');
+  const input = document.getElementById('terminal-input') as HTMLInputElement | null;
+  const output = document.getElementById('terminal-output');
+  const quickBtns = document.querySelectorAll('.quick-cmd');
+
+  const posts = JSON.parse(backdrop?.getAttribute('data-posts') || '[]');
+  const author = JSON.parse(backdrop?.getAttribute('data-author') || '{}');
+
+  function renderPostList(list: typeof posts) {
+    if (!output) return;
+    if (list.length === 0) {
+      output.innerHTML = `<div class="term-cli-box">[系统提示] 未匹配到任何神经元记忆切片。可输入 /帮助 查看终端指令。</div>`;
+      return;
+    }
+    output.innerHTML = list
+      .map(
+        (p: any) => `
+        <a href="/blog/${p.slug}" class="term-item">
+          <div class="term-item-top">
+            <span>[${p.serialCode}] · ${p.category}</span>
+            <span>同步率: ${p.confidence}%</span>
+          </div>
+          <div class="term-item-title">${p.title}</div>
+          <div class="term-item-desc">${p.aiSummary}</div>
+        </a>
+      `
+      )
+      .join('');
+  }
+
+  function handleCommand(raw: string) {
+    if (!output) return;
+    const cmd = raw.trim().toLowerCase();
+
+    if (cmd === '/帮助' || cmd === '/help' || cmd === 'help') {
+      output.innerHTML = `<div class="term-cli-box">◈ 中枢智脑 Ω 终端指令指南：
+• /全部文章    列出所有已归档的 Markdown 神经日志
+• /博主档案    调取博客主理人赛博义体档案
+• /随机跃迁    随机跳转到一篇技术深潜文章
+• /切换主题    切换 矩阵绿 (Matrix) / 赛博青 (Cyber) 视觉协议
+• 直接输入任意关键词（如 智能体, MCP, RAG, WebGPU, Astro）即可执行实时语义检索</div>`;
+      return;
+    }
+
+    if (cmd === '/博主档案' || cmd === '/whoami' || cmd === 'whoami') {
+      output.innerHTML = `<div class="term-cli-box">◈ 身份核验通过：
+代号     : ${author.handle}
+姓名     : ${author.name}
+职责     : ${author.role}
+坐标     : ${author.location}
+状态     : ${author.status}
+简介     : ${author.bio}</div>`;
+      return;
+    }
+
+    if (cmd === '/全部文章' || cmd === '/ls' || cmd === 'ls') {
+      renderPostList(posts);
+      return;
+    }
+
+    if (cmd === '/随机跃迁' || cmd === '/random' || cmd === 'random') {
+      const pick = posts[Math.floor(Math.random() * posts.length)];
+      if (pick) {
+        window.location.href = `/blog/${pick.slug}`;
+      }
+      return;
+    }
+
+    if (cmd === '/切换主题' || cmd === '/matrix' || cmd === 'matrix') {
+      document.body.classList.toggle('theme-matrix');
+      const isMatrix = document.body.classList.contains('theme-matrix');
+      localStorage.setItem('cyber-theme', isMatrix ? 'matrix' : 'cyber');
+      const themeLabel = document.getElementById('theme-label');
+      if (themeLabel) themeLabel.textContent = isMatrix ? '矩阵绿' : '赛博青';
+      output.innerHTML = `<div class="term-cli-box">[系统就绪] 视觉色彩矩阵已切换为：${isMatrix ? '矩阵荧光绿 (#00ff9d)' : '赛博电光青 (#00f3ff)'}</div>`;
+      return;
+    }
+
+    const filtered = posts.filter((p: any) => {
+      const haystack = `${p.title} ${p.category} ${p.tags.join(' ')} ${p.aiSummary}`.toLowerCase();
+      return haystack.includes(cmd);
+    });
+    renderPostList(filtered);
+  }
+
+  function openTerminal() {
+    backdrop?.classList.remove('hidden');
+    renderPostList(posts);
+    setTimeout(() => input?.focus(), 40);
+  }
+
+  function closeTerminal() {
+    backdrop?.classList.add('hidden');
+  }
+
+  openBtn?.addEventListener('click', openTerminal);
+  closeBtn?.addEventListener('click', closeTerminal);
+
+  backdrop?.addEventListener('click', (e) => {
+    if (e.target === backdrop) closeTerminal();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (backdrop?.classList.contains('hidden')) {
+        openTerminal();
+      } else {
+        closeTerminal();
+      }
+    } else if (e.key === 'Escape' && !backdrop?.classList.contains('hidden')) {
+      closeTerminal();
+    }
+  });
+
+  input?.addEventListener('input', (e) => {
+    const val = (e.target as HTMLInputElement).value;
+    if (!val.trim()) {
+      renderPostList(posts);
+      return;
+    }
+    handleCommand(val);
+  });
+
+  quickBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const cmd = btn.getAttribute('data-cmd') || '';
+      if (input) {
+        input.value = cmd;
+        handleCommand(cmd);
+        input.focus();
+      }
+    });
+  });
+</script>

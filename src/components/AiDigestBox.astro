@@ -1,0 +1,190 @@
+---
+interface Props {
+  aiSummary: string;
+  keyTakeaways?: string[];
+  aiModel: string;
+  confidence: number;
+}
+
+const { aiSummary, keyTakeaways = [], aiModel, confidence } = Astro.props;
+---
+
+<section class="hud-box ai-digest-box" aria-label="AI 神经中枢导读">
+  <div class="digest-header">
+    <div class="digest-title-group">
+      <span class="status-dot"></span>
+      <span class="digest-title">AI 神经中枢导读 · 智能摘要解析</span>
+      <span class="cyber-badge">{aiModel}</span>
+    </div>
+    <div class="digest-actions">
+      <span class="confidence-meter">置信同步率：<strong>{confidence}%</strong></span>
+      <button id="resynth-btn" type="button" class="synth-btn">
+        ⚡ 重新解码
+      </button>
+    </div>
+  </div>
+
+  <div class="digest-body">
+    <p id="ai-summary-text" data-full-text={aiSummary} class="summary-paragraph">
+      {aiSummary}
+    </p>
+
+    {keyTakeaways.length > 0 && (
+      <div class="takeaways-block">
+        <div class="takeaways-label">◈ 核心结论提取：</div>
+        <ul class="takeaways-list">
+          {keyTakeaways.map((point, idx) => (
+            <li>
+              <span class="vector-idx">[0{idx + 1}]</span>
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .ai-digest-box {
+    margin: 1.75rem 0 2.5rem;
+    padding: 1.35rem 1.5rem;
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.07) 0%, rgba(12, 17, 29, 0.92) 100%);
+    border: 1px solid rgba(0, 243, 255, 0.35);
+  }
+
+  .digest-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-bottom: 0.85rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.18);
+    font-family: var(--font-mono);
+  }
+
+  .digest-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .digest-title {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    letter-spacing: 0.04em;
+  }
+
+  .digest-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    font-size: 0.78rem;
+  }
+
+  .confidence-meter {
+    color: var(--text-secondary);
+  }
+
+  .confidence-meter strong {
+    color: var(--neon-green);
+  }
+
+  .synth-btn {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.65rem;
+    background: rgba(255, 0, 85, 0.14);
+    border: 1px solid rgba(255, 0, 85, 0.45);
+    color: #ff4d88;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .synth-btn:hover {
+    background: var(--neon-pink);
+    color: #fff;
+    box-shadow: 0 0 12px var(--neon-pink-glow);
+  }
+
+  .summary-paragraph {
+    color: #f1f5f9;
+    font-size: 0.96rem;
+    line-height: 1.75;
+    margin-bottom: 1rem;
+    min-height: 3.2em;
+  }
+
+  .takeaways-block {
+    background: rgba(5, 8, 15, 0.65);
+    border: 1px dashed rgba(0, 243, 255, 0.25);
+    padding: 0.9rem 1.1rem;
+  }
+
+  .takeaways-label {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--neon-yellow);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.04em;
+  }
+
+  .takeaways-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .takeaways-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    font-size: 0.88rem;
+    color: #cbd5e1;
+  }
+
+  .vector-idx {
+    font-family: var(--font-mono);
+    color: var(--neon-cyan);
+    font-size: 0.78rem;
+    flex-shrink: 0;
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('resynth-btn');
+  const textEl = document.getElementById('ai-summary-text');
+  const glyphs = '01アイウエオカキクケコ∑∆ΩΨ⚡█▒░';
+
+  let timer: number | undefined;
+
+  btn?.addEventListener('click', () => {
+    if (!textEl) return;
+    const targetText = textEl.getAttribute('data-full-text') || '';
+    if (timer) clearInterval(timer);
+
+    let step = 0;
+    const totalSteps = targetText.length;
+
+    timer = window.setInterval(() => {
+      step += 3;
+      if (step >= totalSteps) {
+        textEl.textContent = targetText;
+        clearInterval(timer);
+        return;
+      }
+      const decoded = targetText.slice(0, step);
+      const scramble = Array.from({ length: Math.min(8, totalSteps - step) })
+        .map(() => glyphs[Math.floor(Math.random() * glyphs.length)])
+        .join('');
+      textEl.textContent = decoded + scramble;
+    }, 18);
+  });
+</script>

@@ -1,0 +1,323 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { siteConfig, categoryLabels } from '../../data/siteConfig';
+
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const categories = ['ALL', 'AI_AGENT', 'LLM_ARCH', 'EDGE_COMPUTE', 'CYBER_UI', 'NEURAL_THOUGHTS'];
+const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags))];
+---
+
+<BaseLayout title={`文章归档 · ${siteConfig.title}`} description="全部 Markdown 神经归档日志与 AI 研究笔记">
+  <div class="cyber-container">
+    <header class="cyber-panel archive-hero">
+      <div class="archive-hero-top">
+        <span class="cyber-badge cyber-badge-pink">存储扇区 · 神经日志归档</span>
+        <span class="count-indicator">当前匹配节点：<strong id="visible-count">{allPosts.length}</strong> / {allPosts.length} 篇</span>
+      </div>
+      <h1 class="archive-title">记忆库检索 · 全部文章归档</h1>
+      <p class="archive-desc">
+        所有文章均以纯文本 <code>Markdown</code> 编写，并经由 <code>中枢智脑 Ω</code> 提取结构化摘要与向量标签。
+      </p>
+
+      <!-- Interactive Filter Console -->
+      <div class="filter-console">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input
+            id="archive-search-input"
+            type="text"
+            placeholder="输入关键词实时过滤标题、标签或 AI 摘要..."
+          />
+        </div>
+
+        <div class="category-tabs" role="tablist">
+          {categories.map((cat) => (
+            <button
+              type="button"
+              class:list={['cat-tab', { active: cat === 'ALL' }]}
+              data-category={cat}
+            >
+              {categoryLabels[cat] || cat}
+            </button>
+          ))}
+        </div>
+
+        <div class="tag-filter-row">
+          <span class="tag-filter-label">标签筛选：</span>
+          <button type="button" class="tag-filter-btn active" data-tag="ALL">全部标签</button>
+          {allTags.map((tag) => (
+            <button type="button" class="tag-filter-btn" data-tag={tag}>#{tag}</button>
+          ))}
+        </div>
+      </div>
+    </header>
+
+    <div id="archive-posts-grid" class="archive-grid">
+      {allPosts.map((post) => (
+        <div
+          class="archive-item"
+          data-category={post.data.category}
+          data-tags={post.data.tags.join(',')}
+          data-search={`${post.data.title} ${post.data.description} ${post.data.aiSummary} ${post.data.tags.join(' ')}`.toLowerCase()}
+        >
+          <PostCard post={post} featured={post.data.featured} />
+        </div>
+      ))}
+    </div>
+
+    <div id="no-results-box" class="hud-box no-results hidden">
+      <p>[404 记忆缺失] 未找到匹配当前筛选条件的神经元日志。</p>
+      <button id="reset-filters-btn" type="button" class="cyber-btn">重置全部筛选条件</button>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .archive-hero {
+    padding: 2rem 2.25rem;
+    margin-bottom: 2.25rem;
+  }
+
+  .archive-hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
+
+  .count-indicator {
+    color: var(--text-secondary);
+  }
+
+  .count-indicator strong {
+    color: var(--neon-green);
+  }
+
+  .archive-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3vw, 2.3rem);
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .archive-desc {
+    color: var(--text-secondary);
+    font-size: 0.96rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .archive-desc code {
+    font-family: var(--font-mono);
+    color: var(--neon-cyan);
+  }
+
+  .filter-console {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(0, 243, 255, 0.18);
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: rgba(4, 7, 14, 0.9);
+    border: 1px solid rgba(0, 243, 255, 0.35);
+    padding: 0.65rem 1rem;
+  }
+
+  #archive-search-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+  }
+
+  .category-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .cat-tab {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.45rem 0.95rem;
+    background: rgba(0, 243, 255, 0.06);
+    border: 1px solid rgba(0, 243, 255, 0.24);
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .cat-tab:hover,
+  .cat-tab.active {
+    background: var(--neon-cyan);
+    color: #05070c;
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 12px var(--neon-cyan-glow);
+  }
+
+  .tag-filter-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .tag-filter-label {
+    color: var(--neon-pink);
+    margin-right: 0.2rem;
+    font-weight: 700;
+  }
+
+  .tag-filter-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    padding: 0.2rem 0.55rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s;
+  }
+
+  .tag-filter-btn:hover,
+  .tag-filter-btn.active {
+    border-color: var(--neon-pink);
+    background: rgba(255, 0, 85, 0.18);
+    color: #fff;
+  }
+
+  .archive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.35rem;
+  }
+
+  .archive-item.hidden {
+    display: none;
+  }
+
+  .no-results {
+    padding: 2.5rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    color: var(--neon-yellow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .no-results.hidden {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .archive-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const searchInput = document.getElementById('archive-search-input') as HTMLInputElement | null;
+  const catTabs = document.querySelectorAll('.cat-tab');
+  const tagBtns = document.querySelectorAll('.tag-filter-btn');
+  const items = document.querySelectorAll('.archive-item');
+  const visibleCountEl = document.getElementById('visible-count');
+  const noResultsBox = document.getElementById('no-results-box');
+  const resetBtn = document.getElementById('reset-filters-btn');
+
+  let activeCategory = 'ALL';
+  let activeTag = 'ALL';
+  let searchQuery = '';
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTag = urlParams.get('tag');
+  if (initialTag) {
+    activeTag = initialTag;
+    tagBtns.forEach((b) => {
+      b.classList.toggle('active', b.getAttribute('data-tag') === initialTag);
+    });
+  }
+
+  function applyFilters() {
+    let visible = 0;
+    items.forEach((el) => {
+      const itemCat = el.getAttribute('data-category') || '';
+      const itemTags = (el.getAttribute('data-tags') || '').split(',');
+      const itemSearch = el.getAttribute('data-search') || '';
+
+      const matchCat = activeCategory === 'ALL' || itemCat === activeCategory;
+      const matchTag = activeTag === 'ALL' || itemTags.includes(activeTag);
+      const matchSearch = !searchQuery || itemSearch.includes(searchQuery.toLowerCase());
+
+      if (matchCat && matchTag && matchSearch) {
+        el.classList.remove('hidden');
+        visible++;
+      } else {
+        el.classList.add('hidden');
+      }
+    });
+
+    if (visibleCountEl) visibleCountEl.textContent = String(visible);
+    noResultsBox?.classList.toggle('hidden', visible > 0);
+  }
+
+  catTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      catTabs.forEach((t) => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeCategory = tab.getAttribute('data-category') || 'ALL';
+      applyFilters();
+    });
+  });
+
+  tagBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      tagBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeTag = btn.getAttribute('data-tag') || 'ALL';
+      applyFilters();
+    });
+  });
+
+  searchInput?.addEventListener('input', (e) => {
+    searchQuery = (e.target as HTMLInputElement).value.trim();
+    applyFilters();
+  });
+
+  resetBtn?.addEventListener('click', () => {
+    activeCategory = 'ALL';
+    activeTag = 'ALL';
+    searchQuery = '';
+    if (searchInput) searchInput.value = '';
+    catTabs.forEach((t) => t.classList.toggle('active', t.getAttribute('data-category') === 'ALL'));
+    tagBtns.forEach((b) => b.classList.toggle('active', b.getAttribute('data-tag') === 'ALL'));
+    applyFilters();
+  });
+
+  applyFilters();
+</script>

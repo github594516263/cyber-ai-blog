@@ -1,0 +1,371 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import AiDigestBox from '../components/AiDigestBox.astro';
+import { siteConfig, categoryLabels } from '../data/siteConfig';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  headings: MarkdownHeading[];
+  prevPost?: CollectionEntry<'blog'> | null;
+  nextPost?: CollectionEntry<'blog'> | null;
+}
+
+const { post, headings, prevPost, nextPost } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  category,
+  tags,
+  aiSummary,
+  keyTakeaways,
+  aiModel,
+  confidence,
+  readingTime,
+  serialCode,
+} = post.data;
+
+const formattedDate = pubDate.toISOString().split('T')[0];
+const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+<BaseLayout title={`${title} · ${siteConfig.title}`} description={description}>
+  <!-- Top Laser Reading Progress Bar -->
+  <div class="reading-progress-wrap">
+    <div id="reading-progress-bar" class="reading-progress-bar"></div>
+  </div>
+
+  <div class="cyber-container post-container">
+    <div class="breadcrumb-bar">
+      <a href="/blog" class="back-link">← 返回文章归档库</a>
+      <span class="breadcrumb-sep">·</span>
+      <span class="serial-id">{serialCode}</span>
+    </div>
+
+    <header class="cyber-panel post-hero">
+      <div class="hero-meta-row">
+        <span class="cyber-badge cyber-badge-pink">{categoryLabels[category] || category}</span>
+        <span class="meta-item">发布日期：{formattedDate}</span>
+        <span class="meta-item">预计阅读：{readingTime.replace('MIN', '分钟')}</span>
+        <span class="meta-item syn-score">神经同步率：{confidence}%</span>
+      </div>
+
+      <h1 class="post-title">{title}</h1>
+      <p class="post-subtitle">{description}</p>
+
+      <div class="hero-tags">
+        {tags.map((tag) => (
+          <a href={`/blog?tag=${encodeURIComponent(tag)}`} class="tag-pill">#{tag}</a>
+        ))}
+      </div>
+    </header>
+
+    <div class="post-layout-grid">
+      <div class="post-main-column">
+        <AiDigestBox
+          aiSummary={aiSummary}
+          keyTakeaways={keyTakeaways}
+          aiModel={aiModel}
+          confidence={confidence}
+        />
+
+        <article class="hud-box article-body prose-cyber">
+          <slot />
+        </article>
+
+        <!-- Post Adjacent Navigation -->
+        <nav class="adjacent-nav" aria-label="上下篇文章切换">
+          {prevPost ? (
+            <a href={`/blog/${prevPost.id}`} class="cyber-panel adj-card">
+              <span class="adj-label">← 上一篇 · {prevPost.data.serialCode}</span>
+              <span class="adj-title">{prevPost.data.title}</span>
+            </a>
+          ) : <div />}
+
+          {nextPost ? (
+            <a href={`/blog/${nextPost.id}`} class="cyber-panel adj-card adj-right">
+              <span class="adj-label">下一篇 · {nextPost.data.serialCode} →</span>
+              <span class="adj-title">{nextPost.data.title}</span>
+            </a>
+          ) : <div />}
+        </nav>
+      </div>
+
+      <!-- Sticky Cyberpunk Sidebar TOC & Telemetry -->
+      <aside class="post-sidebar">
+        <div class="hud-box sidebar-widget">
+          <div class="widget-title">◈ 章节目录导航</div>
+          {tocHeadings.length > 0 ? (
+            <ul class="toc-list">
+              {tocHeadings.map((h) => (
+                <li class:list={[`toc-depth-${h.depth}`]}>
+                  <a href={`#${h.slug}`} class="toc-link">{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="toc-empty">暂无章节索引</p>
+          )}
+        </div>
+
+        <div class="hud-box sidebar-widget telemetry-widget">
+          <div class="widget-title">◈ 节点遥测参数</div>
+          <div class="kv-row">
+            <span>档案编号</span>
+            <strong>{serialCode}</strong>
+          </div>
+          <div class="kv-row">
+            <span>AI 解析内核</span>
+            <strong>{aiModel}</strong>
+          </div>
+          <div class="kv-row">
+            <span>编译模式</span>
+            <strong>Markdown 静态渲染</strong>
+          </div>
+          <div class="kv-row">
+            <span>当前阅读进度</span>
+            <strong id="sidebar-progress-pct">0%</strong>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .reading-progress-wrap {
+    position: fixed;
+    top: 68px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(0, 243, 255, 0.08);
+    z-index: 99;
+  }
+
+  .reading-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-yellow));
+    box-shadow: 0 0 12px var(--neon-cyan);
+    transition: width 0.08s linear;
+  }
+
+  .breadcrumb-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .back-link {
+    color: var(--neon-cyan);
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    color: var(--neon-pink);
+  }
+
+  .breadcrumb-sep,
+  .serial-id {
+    color: var(--text-muted);
+  }
+
+  .post-hero {
+    padding: 2rem 2.25rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, rgba(12, 17, 29, 0.94), rgba(20, 12, 28, 0.88));
+  }
+
+  .hero-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .syn-score {
+    color: var(--neon-green);
+  }
+
+  .post-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3.2vw, 2.35rem);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 0.85rem;
+  }
+
+  .post-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag-pill {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--neon-cyan);
+    background: rgba(0, 243, 255, 0.08);
+    border: 1px solid rgba(0, 243, 255, 0.25);
+    padding: 0.2rem 0.65rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .tag-pill:hover {
+    background: var(--neon-cyan);
+    color: #05070c;
+  }
+
+  .post-layout-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 290px;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .article-body {
+    padding: 2.25rem;
+  }
+
+  .post-sidebar {
+    position: sticky;
+    top: 90px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .sidebar-widget {
+    padding: 1.25rem;
+  }
+
+  .widget-title {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--neon-pink);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 0, 85, 0.25);
+  }
+
+  .toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+  }
+
+  .toc-depth-3 {
+    padding-left: 0.9rem;
+    font-size: 0.76rem;
+  }
+
+  .toc-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+    display: block;
+    line-height: 1.4;
+  }
+
+  .toc-link:hover {
+    color: var(--neon-cyan);
+  }
+
+  .kv-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+    color: var(--text-secondary);
+  }
+
+  .kv-row strong {
+    color: var(--neon-cyan);
+  }
+
+  .adjacent-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .adj-card {
+    padding: 1.15rem 1.35rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .adj-right {
+    text-align: right;
+  }
+
+  .adj-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--neon-pink);
+  }
+
+  .adj-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  @media (max-width: 980px) {
+    .post-layout-grid {
+      grid-template-columns: 1fr;
+    }
+    .post-sidebar {
+      position: static;
+    }
+    .article-body {
+      padding: 1.35rem;
+    }
+    .adjacent-nav {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const progressBar = document.getElementById('reading-progress-bar');
+  const progressPct = document.getElementById('sidebar-progress-pct');
+
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? Math.min(100, Math.round((scrollTop / docHeight) * 100)) : 0;
+    if (progressBar) progressBar.style.width = `${pct}%`;
+    if (progressPct) progressPct.textContent = `${pct}%`;
+  });
+</script>

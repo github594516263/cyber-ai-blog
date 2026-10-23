@@ -1,0 +1,528 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { siteConfig } from '../data/siteConfig';
+
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const featuredPosts = allPosts.filter((p) => p.data.featured);
+const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags))];
+---
+
+<BaseLayout>
+  <div class="cyber-container">
+    <!-- Hero Cyberdeck HUD -->
+    <section class="cyber-panel hero-hud">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="hero-status-bar">
+            <span class="status-dot"></span>
+            <span class="status-text">{siteConfig.author.status}</span>
+            <span class="cyber-badge cyber-badge-yellow">{siteConfig.author.location}</span>
+          </div>
+
+          <h1 class="hero-heading">
+            <span class="glitch-text" data-text="赛博智脑">赛博智脑</span>
+            <span class="hero-sub-accent">· 硅基思维中枢</span>
+          </h1>
+
+          <p class="hero-bio">{siteConfig.author.bio}</p>
+
+          <!-- Interactive Typewriter Neural Broadcast -->
+          <div class="neural-stream-box">
+            <span class="stream-prefix">[AI 实时推演]</span>
+            <span id="typewriter-stream" class="stream-content">
+              正在初始化多智能体自治集群... 全部 Markdown 记忆节点校验完毕。
+            </span>
+            <span class="cursor-blink">█</span>
+          </div>
+
+          <div class="hero-cta-row">
+            <a href="/blog" class="cyber-btn">
+              <span>⚡ 浏览文章归档 ({allPosts.length} 篇)</span>
+            </a>
+            <button id="hero-terminal-btn" type="button" class="cyber-btn cyber-btn-pink">
+              <span>⌘ 唤醒 AI 终端 (CTRL+K)</span>
+            </button>
+            <a href="/projects" class="cyber-btn">
+              <span>⬡ 进入 AI 实验室</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Telemetry HUD Panel -->
+        <div class="hud-box telemetry-card">
+          <div class="telemetry-header">
+            <span>◈ 智脑算力遥测</span>
+            <span class="live-tag">实时在线</span>
+          </div>
+
+          <div class="telemetry-metrics">
+            <div class="metric-box">
+              <span class="metric-label">神经核心模型</span>
+              <strong class="metric-val cyan">{siteConfig.telemetry.modelVersion}</strong>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">上下文窗口</span>
+              <strong class="metric-val pink">{siteConfig.telemetry.contextWindow}</strong>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">端侧推理延迟</span>
+              <strong class="metric-val green">{siteConfig.telemetry.inferenceLatency}</strong>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">已索引文档</span>
+              <strong class="metric-val yellow">{allPosts.length} 篇 Markdown</strong>
+            </div>
+          </div>
+
+          <div class="skill-bars-mini">
+            {siteConfig.skills.slice(0, 4).map((skill) => (
+              <div class="mini-skill">
+                <div class="mini-skill-top">
+                  <span>{skill.name}</span>
+                  <span>{skill.level}%</span>
+                </div>
+                <div class="mini-bar-track">
+                  <div class="mini-bar-fill" style={`width: ${skill.level}%`}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Posts Section -->
+    <section class="home-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="prefix">01</span>
+          <span>精选深度长文</span>
+        </h2>
+        <a href="/blog" class="section-more">查看全部归档 →</a>
+      </div>
+
+      <div class="featured-grid">
+        {featuredPosts.map((post) => (
+          <PostCard post={post} featured={true} />
+        ))}
+      </div>
+    </section>
+
+    <!-- Main Archive + Neural Sidebar -->
+    <section class="home-section dual-layout">
+      <div class="recent-col">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="prefix">02</span>
+            <span>最新神经日志</span>
+          </h2>
+        </div>
+
+        <div class="posts-stack">
+          {allPosts.map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      </div>
+
+      <aside class="home-sidebar">
+        <!-- Quick Tag Matrix -->
+        <div class="hud-box side-panel">
+          <div class="side-panel-title">◈ 语义向量标签矩阵</div>
+          <div class="tag-matrix">
+            {allTags.map((tag) => (
+              <a href={`/blog?tag=${encodeURIComponent(tag)}`} class="matrix-tag">
+                #{tag}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <!-- Active AI Lab Projects Widget -->
+        <div class="hud-box side-panel">
+          <div class="side-panel-title">◈ 活跃 AI 实验模块</div>
+          <div class="mini-project-list">
+            {siteConfig.projects.slice(0, 3).map((proj) => (
+              <a href="/projects" class="mini-project-item">
+                <div class="mp-top">
+                  <span class="mp-code">{proj.codename}</span>
+                  <span class="cyber-badge">{proj.status}</span>
+                </div>
+                <div class="mp-name">{proj.name}</div>
+                <div class="mp-metrics">{proj.metrics}</div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <!-- Static Deployment Info Card -->
+        <div class="hud-box side-panel deploy-status-card">
+          <div class="side-panel-title">◈ 静态边缘部署引擎</div>
+          <p class="deploy-note">
+            本博客采用 <strong>Astro + Markdown</strong> 预编译架构。只需向 <code>src/content/blog/</code> 提交 <code>.md</code> 文件即可自动触发全球边缘静态部署。
+          </p>
+          <div class="deploy-badges">
+            <span class="cyber-badge">静态预渲染 100%</span>
+            <span class="cyber-badge cyber-badge-pink">零数据库依赖</span>
+            <span class="cyber-badge cyber-badge-yellow">性能评分 100</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .hero-hud {
+    padding: 2.5rem;
+    margin-bottom: 3.5rem;
+    background:
+      radial-gradient(circle at 90% 10%, rgba(255, 0, 85, 0.12), transparent 40%),
+      radial-gradient(circle at 10% 90%, rgba(0, 243, 255, 0.1), transparent 45%),
+      var(--bg-panel);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 2.25rem;
+    align-items: center;
+  }
+
+  .hero-status-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--neon-green);
+    margin-bottom: 1rem;
+  }
+
+  .hero-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.65rem;
+    font-size: clamp(2.1rem, 4.5vw, 3.2rem);
+    line-height: 1.15;
+    margin-bottom: 1.15rem;
+  }
+
+  .hero-sub-accent {
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    color: var(--neon-cyan);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .hero-bio {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    max-width: 640px;
+    margin-bottom: 1.35rem;
+    line-height: 1.75;
+  }
+
+  .neural-stream-box {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(4, 7, 14, 0.85);
+    border-left: 3px solid var(--neon-cyan);
+    font-family: var(--font-mono);
+    font-size: 0.84rem;
+    margin-bottom: 1.65rem;
+  }
+
+  .stream-prefix {
+    color: var(--neon-pink);
+    font-weight: 700;
+  }
+
+  .stream-content {
+    color: var(--neon-cyan);
+  }
+
+  .cursor-blink {
+    color: var(--neon-yellow);
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .hero-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+
+  .telemetry-card {
+    padding: 1.5rem;
+    background: rgba(7, 10, 18, 0.9);
+  }
+
+  .telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+  }
+
+  .live-tag {
+    background: rgba(0, 255, 157, 0.15);
+    color: var(--neon-green);
+    border: 1px solid var(--neon-green);
+    padding: 0.08rem 0.45rem;
+    font-size: 0.7rem;
+  }
+
+  .telemetry-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .metric-box {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(0, 243, 255, 0.15);
+    padding: 0.65rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-family: var(--font-mono);
+  }
+
+  .metric-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+
+  .metric-val {
+    font-size: 0.88rem;
+  }
+
+  .metric-val.cyan { color: var(--neon-cyan); }
+  .metric-val.pink { color: #ff4d88; }
+  .metric-val.green { color: var(--neon-green); }
+  .metric-val.yellow { color: var(--neon-yellow); }
+
+  .skill-bars-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .mini-skill-top {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-secondary);
+    margin-bottom: 0.22rem;
+  }
+
+  .mini-bar-track {
+    height: 5px;
+    background: rgba(255, 255, 255, 0.07);
+    overflow: hidden;
+  }
+
+  .mini-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  }
+
+  .home-section {
+    margin-bottom: 3.75rem;
+  }
+
+  .section-more {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--neon-cyan);
+    text-decoration: none;
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.35rem;
+  }
+
+  .dual-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .posts-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .home-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: sticky;
+    top: 90px;
+  }
+
+  .side-panel {
+    padding: 1.35rem;
+  }
+
+  .side-panel-title {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    letter-spacing: 0.04em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+  }
+
+  .tag-matrix {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .matrix-tag {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    background: rgba(0, 243, 255, 0.05);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    padding: 0.25rem 0.6rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .matrix-tag:hover {
+    color: #05070c;
+    background: var(--neon-cyan);
+    border-color: var(--neon-cyan);
+  }
+
+  .mini-project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .mini-project-item {
+    display: block;
+    text-decoration: none;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(0, 243, 255, 0.14);
+    transition: all 0.2s;
+  }
+
+  .mini-project-item:hover {
+    border-color: var(--neon-pink);
+    transform: translateX(3px);
+  }
+
+  .mp-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .mp-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #fff;
+    margin-bottom: 0.2rem;
+  }
+
+  .mp-metrics {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--neon-green);
+  }
+
+  .deploy-note {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 0.9rem;
+  }
+
+  .deploy-note code {
+    font-family: var(--font-mono);
+    color: var(--neon-cyan);
+    font-size: 0.8rem;
+  }
+
+  .deploy-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  @media (max-width: 960px) {
+    .hero-grid,
+    .dual-layout {
+      grid-template-columns: 1fr;
+    }
+    .hero-hud {
+      padding: 1.5rem;
+    }
+    .home-sidebar {
+      position: static;
+    }
+  }
+</style>
+
+<script>
+  const heroTermBtn = document.getElementById('hero-terminal-btn');
+  const openTermBtn = document.getElementById('open-terminal-btn');
+  heroTermBtn?.addEventListener('click', () => {
+    openTermBtn?.click();
+  });
+
+  const streamEl = document.getElementById('typewriter-stream');
+  const messages = [
+    '正在初始化多智能体自治集群... 全部 Markdown 记忆节点校验完毕。',
+    '上下文工程信噪比达 99.2% · 零幻觉确定性沙箱护栏已激活。',
+    'WebGPU 端侧量化推理核心已就绪 · 静态边缘节点延迟 < 15毫秒。',
+    '随时按下 [Ctrl + K] 即可唤醒中枢智脑 Ω 神经命令与语义检索终端。',
+  ];
+  let msgIdx = 0;
+
+  setInterval(() => {
+    if (!streamEl) return;
+    msgIdx = (msgIdx + 1) % messages.length;
+    streamEl.textContent = messages[msgIdx];
+  }, 4500);
+</script>
