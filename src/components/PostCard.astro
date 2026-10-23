@@ -71,17 +71,12 @@ const categoryColorMap: Record<string, string> = {
 
   .post-card:hover {
     transform: translateY(-4px);
-    border-color: var(--border-hover);
+    border-color: var(--neon-cyan);
   }
 
   .post-card.is-featured {
-    background: var(--bg-panel-featured);
-  }
-
-  .post-card.is-featured::before {
-    height: 3px;
-    background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan));
-    opacity: 0.9;
+    border-left: 3px solid var(--neon-pink);
+    background: linear-gradient(135deg, rgba(255, 0, 85, 0.06) 0%, rgba(12, 17, 29, 0.88) 45%);
   }
 
   .card-top-bar {
@@ -125,14 +120,14 @@ const categoryColorMap: Record<string, string> = {
     font-family: var(--font-display);
     font-size: 1.22rem;
     font-weight: 700;
-    color: var(--text-heading);
+    color: #fff;
     line-height: 1.4;
     transition: color 0.2s ease, text-shadow 0.2s ease;
   }
 
   .post-card:hover .card-title {
     color: var(--neon-cyan);
-    text-shadow: 0 0 12px var(--neon-cyan-glow);
+    text-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
   }
 
   .card-desc {
@@ -142,12 +137,11 @@ const categoryColorMap: Record<string, string> = {
   }
 
   .ai-snippet {
-    background: var(--bg-inset);
+    background: rgba(0, 243, 255, 0.04);
     border-left: 2px solid var(--neon-cyan);
-    border-radius: 0 6px 6px 0;
     padding: 0.65rem 0.85rem;
     font-size: 0.82rem;
-    color: var(--text-primary);
+    color: #cbd5e1;
     line-height: 1.55;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -169,7 +163,7 @@ const categoryColorMap: Record<string, string> = {
     flex-wrap: wrap;
     gap: 0.75rem;
     padding-top: 0.75rem;
-    border-top: 1px solid var(--border-subtle);
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
   }
 
   .tag-list {
@@ -181,10 +175,10 @@ const categoryColorMap: Record<string, string> = {
   .tag-chip {
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    color: var(--text-secondary);
-    background: var(--bg-chip);
-    padding: 0.16rem 0.55rem;
-    border-radius: 6px;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.15rem 0.45rem;
+    border-radius: 2px;
   }
 
   .read-more-link {
