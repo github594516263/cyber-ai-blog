@@ -8,15 +8,12 @@ const blog = defineCollection({
     description: z.string(),
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
-    category: z.enum(['AI_AGENT', 'LLM_ARCH', 'CYBER_UI', 'EDGE_COMPUTE', 'NEURAL_THOUGHTS']),
+    category: z.enum(['FRONTEND', 'BACKEND', 'AI_PRACTICE', 'LIFE']),
     tags: z.array(z.string()),
     aiSummary: z.string(),
     keyTakeaways: z.array(z.string()).optional(),
-    aiModel: z.string().default('CORTEX-Ω v4.8'),
-    confidence: z.number().min(0).max(100).default(98.4),
-    readingTime: z.string().default('6 MIN'),
+    readingTime: z.string().default('5 分钟'),
     featured: z.boolean().default(false),
-    serialCode: z.string().default('LOG-2026-X'),
   }),
 });
 

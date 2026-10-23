@@ -2,24 +2,20 @@
 interface Props {
   aiSummary: string;
   keyTakeaways?: string[];
-  aiModel: string;
-  confidence: number;
 }
 
-const { aiSummary, keyTakeaways = [], aiModel, confidence } = Astro.props;
+const { aiSummary, keyTakeaways = [] } = Astro.props;
 ---
 
-<section class="hud-box ai-digest-box" aria-label="AI 神经中枢导读">
+<section class="hud-box ai-digest-box" aria-label="AI 文章摘要">
   <div class="digest-header">
     <div class="digest-title-group">
       <span class="status-dot"></span>
-      <span class="digest-title">AI 神经中枢导读 · 智能摘要解析</span>
-      <span class="cyber-badge">{aiModel}</span>
+      <span class="digest-title">🤖 AI 核心摘要 & 要点速览</span>
     </div>
     <div class="digest-actions">
-      <span class="confidence-meter">置信同步率：<strong>{confidence}%</strong></span>
       <button id="resynth-btn" type="button" class="synth-btn">
-        ⚡ 重新解码
+        ⚡ 重新生成摘要
       </button>
     </div>
   </div>
@@ -31,7 +27,7 @@ const { aiSummary, keyTakeaways = [], aiModel, confidence } = Astro.props;
 
     {keyTakeaways.length > 0 && (
       <div class="takeaways-block">
-        <div class="takeaways-label">◈ 核心结论提取：</div>
+        <div class="takeaways-label">◈ 本文要点速览：</div>
         <ul class="takeaways-list">
           {keyTakeaways.map((point, idx) => (
             <li>
@@ -47,7 +43,7 @@ const { aiSummary, keyTakeaways = [], aiModel, confidence } = Astro.props;
 
 <style>
   .ai-digest-box {
-    margin: 1.75rem 0 2.5rem;
+    margin: 1.5rem 0 2.25rem;
     padding: 1.35rem 1.5rem;
     background: linear-gradient(135deg, rgba(0, 243, 255, 0.07) 0%, rgba(12, 17, 29, 0.92) 100%);
     border: 1px solid rgba(0, 243, 255, 0.35);
@@ -73,7 +69,7 @@ const { aiSummary, keyTakeaways = [], aiModel, confidence } = Astro.props;
   }
 
   .digest-title {
-    font-size: 0.86rem;
+    font-size: 0.88rem;
     font-weight: 700;
     color: var(--neon-cyan);
     letter-spacing: 0.04em;
@@ -84,14 +80,6 @@ const { aiSummary, keyTakeaways = [], aiModel, confidence } = Astro.props;
     align-items: center;
     gap: 0.85rem;
     font-size: 0.78rem;
-  }
-
-  .confidence-meter {
-    color: var(--text-secondary);
-  }
-
-  .confidence-meter strong {
-    color: var(--neon-green);
   }
 
   .synth-btn {
@@ -161,7 +149,7 @@ const { aiSummary, keyTakeaways = [], aiModel, confidence } = Astro.props;
 <script>
   const btn = document.getElementById('resynth-btn');
   const textEl = document.getElementById('ai-summary-text');
-  const glyphs = '01アイウエオカキクケコ∑∆ΩΨ⚡█▒░';
+  const glyphs = '01∑∆ΩΨ⚡█▒░';
 
   let timer: number | undefined;
 
@@ -181,7 +169,7 @@ const { aiSummary, keyTakeaways = [], aiModel, confidence } = Astro.props;
         return;
       }
       const decoded = targetText.slice(0, step);
-      const scramble = Array.from({ length: Math.min(8, totalSteps - step) })
+      const scramble = Array.from({ length: Math.min(6, totalSteps - step) })
         .map(() => glyphs[Math.floor(Math.random() * glyphs.length)])
         .join('');
       textEl.textContent = decoded + scramble;

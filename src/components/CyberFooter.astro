@@ -8,36 +8,35 @@ const currentYear = new Date().getFullYear();
     <div class="footer-col">
       <div class="footer-brand">
         <span class="status-dot"></span>
-        <span class="footer-title">{siteConfig.title} · 神经记忆归档库</span>
+        <span class="footer-title">{siteConfig.title} · {siteConfig.subtitle}</span>
       </div>
       <p class="footer-desc">
-        基于 <strong>Astro 5 静态生成引擎</strong> + <strong>Markdown 内容集合</strong> 驱动。
-        100% 纯静态预渲染，支持全球边缘节点毫秒级部署。
+        使用 <strong>Astro 5</strong> + <strong>Markdown</strong> 构建的静态个人博客。记录全栈开发技术笔记、AI 提效实践与生活日常。
       </p>
       <div class="telemetry-strip">
-        <span>核心模型：{siteConfig.telemetry.modelVersion}</span>
+        <span>前端：{siteConfig.profileStats.mainFrontend}</span>
         <span>•</span>
-        <span>推理延迟：{siteConfig.telemetry.inferenceLatency}</span>
+        <span>后端：{siteConfig.profileStats.mainBackend}</span>
         <span>•</span>
-        <span>防御状态：{siteConfig.telemetry.securityLevel}</span>
+        <span>部署：{siteConfig.profileStats.deployStack}</span>
       </div>
     </div>
 
     <div class="footer-col footer-links">
-      <div class="footer-heading">◈ 导航节点矩阵</div>
+      <div class="footer-heading">◈ 页面导航</div>
       <div class="link-group">
         <a href="/">首页</a>
         <a href="/blog">文章归档</a>
-        <a href="/projects">AI 实验室</a>
-        <a href="/about">个人档案</a>
-        <a href="/rss.xml">RSS 订阅源</a>
+        <a href="/projects">我的项目</a>
+        <a href="/about">关于我</a>
+        <a href="/rss.xml">RSS 订阅</a>
       </div>
     </div>
   </div>
 
   <div class="cyber-container footer-bottom">
-    <span>© {currentYear} {siteConfig.author.name}（{siteConfig.author.handle}）· 保留所有数字神经版权</span>
-    <span class="uptime-counter">● 系统状态：运行正常 · 静态边缘节点已就绪</span>
+    <span>© {currentYear} {siteConfig.author.name} · 用代码与文字记录生活</span>
+    <span class="uptime-counter">● Astro 静态构建 · 极速访问已就绪</span>
   </div>
 </footer>
 
@@ -69,7 +68,7 @@ const currentYear = new Date().getFullYear();
     font-family: var(--font-display);
     font-weight: 700;
     color: #fff;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
   }
 
   .footer-desc {
@@ -92,7 +91,7 @@ const currentYear = new Date().getFullYear();
     font-size: 0.82rem;
     font-weight: 700;
     margin-bottom: 0.85rem;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
   }
 
   .link-group {

@@ -21,10 +21,7 @@ const {
   tags,
   aiSummary,
   keyTakeaways,
-  aiModel,
-  confidence,
   readingTime,
-  serialCode,
 } = post.data;
 
 const formattedDate = pubDate.toISOString().split('T')[0];
@@ -39,17 +36,16 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
   <div class="cyber-container post-container">
     <div class="breadcrumb-bar">
-      <a href="/blog" class="back-link">← 返回文章归档库</a>
+      <a href="/blog" class="back-link">← 返回文章列表</a>
       <span class="breadcrumb-sep">·</span>
-      <span class="serial-id">{serialCode}</span>
+      <span class="serial-id">{categoryLabels[category] || category}</span>
     </div>
 
     <header class="cyber-panel post-hero">
       <div class="hero-meta-row">
         <span class="cyber-badge cyber-badge-pink">{categoryLabels[category] || category}</span>
-        <span class="meta-item">发布日期：{formattedDate}</span>
-        <span class="meta-item">预计阅读：{readingTime.replace('MIN', '分钟')}</span>
-        <span class="meta-item syn-score">神经同步率：{confidence}%</span>
+        <span class="meta-item">📅 发布于 {formattedDate}</span>
+        <span class="meta-item">⏱ 预计阅读 {readingTime}</span>
       </div>
 
       <h1 class="post-title">{title}</h1>
@@ -67,8 +63,6 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
         <AiDigestBox
           aiSummary={aiSummary}
           keyTakeaways={keyTakeaways}
-          aiModel={aiModel}
-          confidence={confidence}
         />
 
         <article class="hud-box article-body prose-cyber">
@@ -79,24 +73,24 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
         <nav class="adjacent-nav" aria-label="上下篇文章切换">
           {prevPost ? (
             <a href={`/blog/${prevPost.id}`} class="cyber-panel adj-card">
-              <span class="adj-label">← 上一篇 · {prevPost.data.serialCode}</span>
+              <span class="adj-label">← 上一篇</span>
               <span class="adj-title">{prevPost.data.title}</span>
             </a>
           ) : <div />}
 
           {nextPost ? (
             <a href={`/blog/${nextPost.id}`} class="cyber-panel adj-card adj-right">
-              <span class="adj-label">下一篇 · {nextPost.data.serialCode} →</span>
+              <span class="adj-label">下一篇 →</span>
               <span class="adj-title">{nextPost.data.title}</span>
             </a>
           ) : <div />}
         </nav>
       </div>
 
-      <!-- Sticky Cyberpunk Sidebar TOC & Telemetry -->
+      <!-- Sticky Cyberpunk Sidebar TOC & Post Info -->
       <aside class="post-sidebar">
         <div class="hud-box sidebar-widget">
-          <div class="widget-title">◈ 章节目录导航</div>
+          <div class="widget-title">◈ 文章目录 (TOC)</div>
           {tocHeadings.length > 0 ? (
             <ul class="toc-list">
               {tocHeadings.map((h) => (
@@ -106,26 +100,26 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
               ))}
             </ul>
           ) : (
-            <p class="toc-empty">暂无章节索引</p>
+            <p class="toc-empty">暂无章节目录</p>
           )}
         </div>
 
         <div class="hud-box sidebar-widget telemetry-widget">
-          <div class="widget-title">◈ 节点遥测参数</div>
+          <div class="widget-title">◈ 文章信息</div>
           <div class="kv-row">
-            <span>档案编号</span>
-            <strong>{serialCode}</strong>
+            <span>所属分类</span>
+            <strong>{categoryLabels[category] || category}</strong>
           </div>
           <div class="kv-row">
-            <span>AI 解析内核</span>
-            <strong>{aiModel}</strong>
+            <span>发布时间</span>
+            <strong>{formattedDate}</strong>
           </div>
           <div class="kv-row">
-            <span>编译模式</span>
-            <strong>Markdown 静态渲染</strong>
+            <span>阅读时长</span>
+            <strong>{readingTime}</strong>
           </div>
           <div class="kv-row">
-            <span>当前阅读进度</span>
+            <span>阅读进度</span>
             <strong id="sidebar-progress-pct">0%</strong>
           </div>
         </div>
@@ -191,10 +185,6 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
     font-size: 0.78rem;
     color: var(--text-secondary);
     margin-bottom: 1rem;
-  }
-
-  .syn-score {
-    color: var(--neon-green);
   }
 
   .post-title {

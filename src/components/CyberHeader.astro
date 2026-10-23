@@ -5,8 +5,8 @@ const pathname = Astro.url.pathname;
 const navItems = [
   { num: '01', label: '首页', href: '/' },
   { num: '02', label: '文章归档', href: '/blog' },
-  { num: '03', label: 'AI 实验室', href: '/projects' },
-  { num: '04', label: '个人档案', href: '/about' },
+  { num: '03', label: '我的项目', href: '/projects' },
+  { num: '04', label: '关于我', href: '/about' },
 ];
 ---
 
@@ -14,11 +14,11 @@ const navItems = [
   <div class="cyber-container header-inner">
     <a href="/" class="brand-logo" aria-label="返回首页">
       <div class="brand-icon">
-        <span class="brand-core">⚡ AI</span>
+        <span class="brand-core">&lt;/&gt;</span>
       </div>
       <div class="brand-text">
         <span class="brand-title">{siteConfig.title}</span>
-        <span class="brand-sub">NEURAL DECK · 2077</span>
+        <span class="brand-sub">{siteConfig.subtitle}</span>
       </div>
     </a>
 
@@ -35,9 +35,9 @@ const navItems = [
     </nav>
 
     <div class="header-actions">
-      <button id="open-terminal-btn" class="terminal-trigger" type="button" title="唤醒神经终端 (Ctrl+K)">
+      <button id="open-terminal-btn" class="terminal-trigger" type="button" title="打开快捷搜索面板 (Ctrl+K)">
         <span class="status-dot"></span>
-        <span class="trigger-text">AI 终端</span>
+        <span class="trigger-text">快捷搜索</span>
         <kbd class="trigger-kbd">⌘K</kbd>
       </button>
 
@@ -104,17 +104,17 @@ const navItems = [
   .brand-title {
     font-family: var(--font-display);
     font-weight: 900;
-    font-size: 1.1rem;
-    letter-spacing: 0.06em;
+    font-size: 1.08rem;
+    letter-spacing: 0.04em;
     color: #fff;
     line-height: 1.2;
   }
 
   .brand-sub {
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     color: var(--text-muted);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.04em;
   }
 
   .cyber-nav {

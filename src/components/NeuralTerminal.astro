@@ -11,8 +11,8 @@ const searchIndex = allPosts
     category: categoryLabels[post.data.category] || post.data.category,
     tags: post.data.tags,
     aiSummary: post.data.aiSummary,
-    serialCode: post.data.serialCode,
-    confidence: post.data.confidence,
+    readingTime: post.data.readingTime,
+    pubDate: post.data.pubDate.toISOString().split('T')[0],
   }));
 ---
 
@@ -22,11 +22,11 @@ const searchIndex = allPosts
   data-posts={JSON.stringify(searchIndex)}
   data-author={JSON.stringify(siteConfig.author)}
 >
-  <div class="cyber-panel terminal-modal" role="dialog" aria-modal="true" aria-label="AI 神经命令终端">
+  <div class="cyber-panel terminal-modal" role="dialog" aria-modal="true" aria-label="快捷搜索与命令终端">
     <div class="terminal-topbar">
       <div class="topbar-left">
         <span class="status-dot"></span>
-        <span class="terminal-title">中枢智脑 Ω · 神经命令与语义检索终端</span>
+        <span class="terminal-title">快捷搜索与命令面板 (Ctrl+K)</span>
       </div>
       <div class="topbar-right">
         <span class="kbd-hint">按 ESC 关闭</span>
@@ -35,22 +35,22 @@ const searchIndex = allPosts
     </div>
 
     <div class="terminal-input-row">
-      <span class="prompt-prefix">访客@赛博终端:~#</span>
+      <span class="prompt-prefix">dev@blog:~$</span>
       <input
         id="terminal-input"
         type="text"
-        placeholder="输入关键词实时搜索文章，或点击下方快捷指令..."
+        placeholder="输入关键词搜索文章（标题、标签、摘要），或点击下方快捷命令..."
         autocomplete="off"
       />
     </div>
 
     <div class="quick-cmd-bar">
-      <span class="cmd-label">快捷指令：</span>
-      <button type="button" class="quick-cmd" data-cmd="/帮助">/帮助</button>
+      <span class="cmd-label">快捷命令：</span>
       <button type="button" class="quick-cmd" data-cmd="/全部文章">/全部文章</button>
-      <button type="button" class="quick-cmd" data-cmd="/博主档案">/博主档案</button>
-      <button type="button" class="quick-cmd" data-cmd="/随机跃迁">/随机跃迁</button>
+      <button type="button" class="quick-cmd" data-cmd="/随机一篇">/随机一篇</button>
+      <button type="button" class="quick-cmd" data-cmd="/关于我">/关于我</button>
       <button type="button" class="quick-cmd" data-cmd="/切换主题">/切换主题</button>
+      <button type="button" class="quick-cmd" data-cmd="/帮助">/帮助</button>
     </div>
 
     <div id="terminal-output" class="terminal-output">
@@ -58,8 +58,8 @@ const searchIndex = allPosts
     </div>
 
     <div class="terminal-footer">
-      <span>已索引节点：{searchIndex.length} 篇 Markdown 档案</span>
-      <span>引擎模式：端侧混合语义检索</span>
+      <span>共收录 {searchIndex.length} 篇 Markdown 文章</span>
+      <span>支持标题 / 标签 / AI 摘要实时检索</span>
     </div>
   </div>
 </div>
@@ -274,7 +274,7 @@ const searchIndex = allPosts
   function renderPostList(list: typeof posts) {
     if (!output) return;
     if (list.length === 0) {
-      output.innerHTML = `<div class="term-cli-box">[系统提示] 未匹配到任何神经元记忆切片。可输入 /帮助 查看终端指令。</div>`;
+      output.innerHTML = `<div class="term-cli-box">未找到匹配的文章。试试输入其他关键词，或点击上方快捷命令。</div>`;
       return;
     }
     output.innerHTML = list
@@ -282,8 +282,8 @@ const searchIndex = allPosts
         (p: any) => `
         <a href="/blog/${p.slug}" class="term-item">
           <div class="term-item-top">
-            <span>[${p.serialCode}] · ${p.category}</span>
-            <span>同步率: ${p.confidence}%</span>
+            <span>[${p.category}] · ${p.pubDate}</span>
+            <span>⏱ ${p.readingTime}</span>
           </div>
           <div class="term-item-title">${p.title}</div>
           <div class="term-item-desc">${p.aiSummary}</div>
@@ -298,21 +298,19 @@ const searchIndex = allPosts
     const cmd = raw.trim().toLowerCase();
 
     if (cmd === '/帮助' || cmd === '/help' || cmd === 'help') {
-      output.innerHTML = `<div class="term-cli-box">◈ 中枢智脑 Ω 终端指令指南：
-• /全部文章    列出所有已归档的 Markdown 神经日志
-• /博主档案    调取博客主理人赛博义体档案
-• /随机跃迁    随机跳转到一篇技术深潜文章
-• /切换主题    切换 矩阵绿 (Matrix) / 赛博青 (Cyber) 视觉协议
-• 直接输入任意关键词（如 智能体, MCP, RAG, WebGPU, Astro）即可执行实时语义检索</div>`;
+      output.innerHTML = `<div class="term-cli-box">◈ 快捷搜索与命令说明：
+• 直接输入关键词（如 Astro, Docker, AI, 咖啡）即可实时搜索全部文章
+• /全部文章    查看所有博客文章列表
+• /随机一篇    随机打开一篇文章阅读
+• /关于我      查看博主简介与联系方式
+• /切换主题    切换 赛博青 / 矩阵绿 配色主题</div>`;
       return;
     }
 
-    if (cmd === '/博主档案' || cmd === '/whoami' || cmd === 'whoami') {
-      output.innerHTML = `<div class="term-cli-box">◈ 身份核验通过：
-代号     : ${author.handle}
-姓名     : ${author.name}
-职责     : ${author.role}
-坐标     : ${author.location}
+    if (cmd === '/关于我' || cmd === '/博主档案' || cmd === '/whoami' || cmd === 'whoami') {
+      output.innerHTML = `<div class="term-cli-box">◈ 關於博主：
+昵称     : ${author.name} (${author.handle})
+定位     : ${author.role}
 状态     : ${author.status}
 简介     : ${author.bio}</div>`;
       return;
@@ -323,7 +321,7 @@ const searchIndex = allPosts
       return;
     }
 
-    if (cmd === '/随机跃迁' || cmd === '/random' || cmd === 'random') {
+    if (cmd === '/随机一篇' || cmd === '/随机跃迁' || cmd === '/random' || cmd === 'random') {
       const pick = posts[Math.floor(Math.random() * posts.length)];
       if (pick) {
         window.location.href = `/blog/${pick.slug}`;
@@ -337,7 +335,7 @@ const searchIndex = allPosts
       localStorage.setItem('cyber-theme', isMatrix ? 'matrix' : 'cyber');
       const themeLabel = document.getElementById('theme-label');
       if (themeLabel) themeLabel.textContent = isMatrix ? '矩阵绿' : '赛博青';
-      output.innerHTML = `<div class="term-cli-box">[系统就绪] 视觉色彩矩阵已切换为：${isMatrix ? '矩阵荧光绿 (#00ff9d)' : '赛博电光青 (#00f3ff)'}</div>`;
+      output.innerHTML = `<div class="term-cli-box">已切换全站主题配色为：${isMatrix ? '矩阵荧光绿 (#00ff9d)' : '赛博电光青 (#00f3ff)'}</div>`;
       return;
     }
 

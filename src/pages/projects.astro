@@ -3,16 +3,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteConfig } from '../data/siteConfig';
 ---
 
-<BaseLayout title={`AI 实验室 · ${siteConfig.title}`} description="开源 AI 智能体、RAG 引擎与赛博朋克实验项目矩阵">
+<BaseLayout title={`我的项目 · ${siteConfig.title}`} description="全栈开发项目、效率小工具与业余折腾作品集">
   <div class="cyber-container">
     <header class="cyber-panel lab-hero">
       <div class="lab-top">
-        <span class="cyber-badge cyber-badge-yellow">研发扇区 · AI 实验室</span>
-        <span class="cluster-status">算力集群：{siteConfig.telemetry.gpuCluster}</span>
+        <span class="cyber-badge cyber-badge-yellow">作品集 · 全栈开发与工具</span>
+        <span class="cluster-status">共收录 {siteConfig.projects.length} 个项目</span>
       </div>
-      <h1 class="lab-title">AI 实验室 · 硅基造物工坊</h1>
+      <h1 class="lab-title">我的项目与小工具</h1>
       <p class="lab-desc">
-        这里汇集了我在大语言模型智能体（Multi-Agent）、端侧 WebGPU 推理、混合向量检索（GraphRAG）以及生成式赛博着色器领域的实验项目与开源模块。
+        这里记录了我平时开发的全栈项目、提升日常工作效率的 AI 命令行小工具，以及周末业余时间折腾的开源配置。
       </p>
     </header>
 
@@ -21,13 +21,13 @@ import { siteConfig } from '../data/siteConfig';
         <article class="cyber-panel project-card">
           <div class="proj-header">
             <div>
-              <span class="proj-codename">{proj.id} · {proj.codename}</span>
+              <span class="proj-codename">#{proj.id} · {proj.tag}</span>
               <h2 class="proj-name">{proj.name}</h2>
             </div>
             <span
               class:list={[
                 'cyber-badge',
-                proj.status === '运行中' ? '' : proj.status === '已部署' ? 'cyber-badge-pink' : 'cyber-badge-yellow',
+                proj.status === '已上线' ? '' : proj.status === '维护中' ? 'cyber-badge-pink' : 'cyber-badge-yellow',
               ]}
             >
               {proj.status}
@@ -37,8 +37,8 @@ import { siteConfig } from '../data/siteConfig';
           <p class="proj-desc">{proj.description}</p>
 
           <div class="proj-metrics-bar">
-            <span class="metrics-prefix">核心指标：</span>
-            <strong>{proj.metrics}</strong>
+            <span class="metrics-prefix">项目亮点：</span>
+            <strong>{proj.highlight}</strong>
           </div>
 
           <div class="proj-stack">
@@ -49,34 +49,17 @@ import { siteConfig } from '../data/siteConfig';
 
           <div class="proj-actions">
             <a href={proj.repoUrl} target="_blank" rel="noopener noreferrer" class="cyber-btn">
-              <span>⬡ 查看源码仓库</span>
+              <span>⬡ GitHub 源码</span>
             </a>
             {proj.demoUrl && (
               <a href={proj.demoUrl} target="_blank" rel="noopener noreferrer" class="cyber-btn cyber-btn-pink">
-                <span>⚡ 在线演示节点</span>
+                <span>⚡ 在线预览</span>
               </a>
             )}
           </div>
         </article>
       ))}
     </div>
-
-    <!-- Interactive AI Benchmark Simulator -->
-    <section class="hud-box benchmark-panel">
-      <div class="section-header">
-        <h2 class="section-title">
-          <span class="prefix">02</span>
-          <span>端侧推理吞吐模拟器 · 本地量化基准测试</span>
-        </h2>
-        <button id="run-bench-btn" type="button" class="cyber-btn">
-          ▶ 启动神经基准测试
-        </button>
-      </div>
-
-      <div id="bench-log" class="bench-terminal">
-[系统就绪] 点击右上角「启动神经基准测试」模拟端侧 4-bit 量化模型与混合 RAG 检索延迟测试...
-      </div>
-    </section>
   </div>
 </BaseLayout>
 
@@ -192,49 +175,9 @@ import { siteConfig } from '../data/siteConfig';
     padding-top: 0.5rem;
   }
 
-  .benchmark-panel {
-    padding: 1.75rem;
-  }
-
-  .bench-terminal {
-    font-family: var(--font-mono);
-    font-size: 0.84rem;
-    background: #05070c;
-    border: 1px solid rgba(0, 243, 255, 0.25);
-    padding: 1.25rem;
-    color: var(--neon-cyan);
-    min-height: 150px;
-    white-space: pre-wrap;
-    line-height: 1.7;
-  }
-
   @media (max-width: 768px) {
     .projects-grid {
       grid-template-columns: 1fr;
     }
   }
 </style>
-
-<script>
-  const benchBtn = document.getElementById('run-bench-btn');
-  const benchLog = document.getElementById('bench-log');
-
-  const lines = [
-    '[00.01秒] ▸ 正在探测 WebGPU 算力适配器... 已识别本地神经加速核心。',
-    '[00.18秒] ▸ 正在将 4-bit 量化权重 (CORTEX-8B-Q4_K_M.gguf) 载入显存...',
-    '[00.42秒] ▸ 正在初始化 HNSW 向量索引 (5 篇 Markdown 节点, 1536 维语义嵌入)...',
-    '[00.65秒] ▸ 提示词预填充速度 : 1,420 词元/秒 (KV-Cache 缓存命中率: 94.2%)',
-    '[00.91秒] ▸ 词元解码生成速度 : 78.4 词元/秒 (单字延迟 12.7 毫秒)',
-    '[01.10秒] ✔ [测试通过] 全部赛博 AI 子系统运行正常，随时可进行生产级部署。',
-  ];
-
-  benchBtn?.addEventListener('click', () => {
-    if (!benchLog) return;
-    benchLog.textContent = '';
-    lines.forEach((line, idx) => {
-      setTimeout(() => {
-        benchLog.textContent += (idx === 0 ? '' : '\n') + line;
-      }, idx * 240);
-    });
-  });
-</script>

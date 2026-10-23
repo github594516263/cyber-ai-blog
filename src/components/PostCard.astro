@@ -8,32 +8,29 @@ interface Props {
 }
 
 const { post, featured = false } = Astro.props;
-const { title, description, pubDate, category, tags, aiSummary, confidence, readingTime, serialCode } = post.data;
+const { title, description, pubDate, category, tags, aiSummary, readingTime } = post.data;
 
 const formattedDate = pubDate.toISOString().split('T')[0];
 
 const categoryColorMap: Record<string, string> = {
-  AI_AGENT: 'cyber-badge-pink',
-  LLM_ARCH: 'cyber-badge',
-  CYBER_UI: 'cyber-badge-yellow',
-  EDGE_COMPUTE: 'cyber-badge',
-  NEURAL_THOUGHTS: 'cyber-badge-pink',
+  FRONTEND: 'cyber-badge',
+  BACKEND: 'cyber-badge-pink',
+  AI_PRACTICE: 'cyber-badge-yellow',
+  LIFE: 'cyber-badge',
 };
 ---
 
 <article class:list={['cyber-panel post-card', { 'is-featured': featured }]}>
   <div class="card-top-bar">
     <div class="meta-left">
-      <span class="serial-code">{serialCode}</span>
       <span class:list={['cyber-badge', categoryColorMap[category] || '']}>
         {categoryLabels[category] || category}
       </span>
+      {featured && <span class="featured-pill">★ 精选</span>}
     </div>
     <div class="meta-right">
-      <span class="confidence-pill" title="AI 神经置信度评分">
-        同步率 {confidence}%
-      </span>
       <time datetime={pubDate.toISOString()} class="post-date">{formattedDate}</time>
+      <span class="read-time-pill">⏱ {readingTime}</span>
     </div>
   </div>
 
@@ -44,7 +41,7 @@ const categoryColorMap: Record<string, string> = {
   <p class="card-desc">{description}</p>
 
   <div class="ai-snippet">
-    <span class="ai-snippet-label">AI 摘要：</span>
+    <span class="ai-snippet-label">🤖 AI 摘要：</span>
     <span class="ai-snippet-text">{aiSummary}</span>
   </div>
 
@@ -56,7 +53,7 @@ const categoryColorMap: Record<string, string> = {
     </div>
 
     <a href={`/blog/${post.id}`} class="read-more-link">
-      <span>阅读全文 ({readingTime.replace('MIN', '分钟')})</span>
+      <span>阅读全文</span>
       <span class="arrow">→</span>
     </a>
   </div>
@@ -99,16 +96,14 @@ const categoryColorMap: Record<string, string> = {
     gap: 0.55rem;
   }
 
-  .serial-code {
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
+  .featured-pill {
+    color: var(--neon-yellow);
+    font-size: 0.72rem;
+    font-weight: 700;
   }
 
-  .confidence-pill {
-    color: var(--neon-green);
-    background: rgba(0, 255, 157, 0.08);
-    border: 1px solid rgba(0, 255, 157, 0.28);
-    padding: 0.1rem 0.45rem;
+  .read-time-pill {
+    color: var(--text-muted);
     font-size: 0.72rem;
     white-space: nowrap;
   }

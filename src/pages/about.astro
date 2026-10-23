@@ -3,37 +3,37 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteConfig } from '../data/siteConfig';
 ---
 
-<BaseLayout title={`个人档案 · ${siteConfig.title}`} description="关于博主的赛博义体配置、技术栈矩阵与数字演进时间线">
+<BaseLayout title={`关于我 · ${siteConfig.title}`} description="全栈开发者个人简介、常用技术栈与经历">
   <div class="cyber-container">
-    <!-- Cyberdeck Identity Card -->
+    <!-- Developer Profile Card -->
     <section class="cyber-panel profile-hero">
       <div class="profile-grid">
         <div class="avatar-holo">
           <div class="holo-frame">
-            <span class="holo-code">{siteConfig.author.avatarText}</span>
+            <span class="holo-code">&lt;{siteConfig.author.avatarText}/&gt;</span>
             <div class="holo-scanline"></div>
           </div>
-          <span class="cyber-badge cyber-badge-pink">神经身份：已认证</span>
+          <span class="cyber-badge cyber-badge-pink">{siteConfig.author.handle}</span>
         </div>
 
         <div class="profile-info">
           <div class="handle-row">
             <span class="status-dot"></span>
-            <span class="handle-text">{siteConfig.author.handle}</span>
+            <span class="handle-text">{siteConfig.author.status}</span>
           </div>
-          <h1 class="author-name">{siteConfig.author.name}</h1>
+          <h1 class="author-name">你好，我是 {siteConfig.author.name}</h1>
           <p class="author-role">{siteConfig.author.role}</p>
           <p class="author-bio">{siteConfig.author.bio}</p>
 
           <div class="contact-links">
             <a href={siteConfig.author.github} target="_blank" rel="noopener noreferrer" class="cyber-btn">
-              GitHub 代码节点
+              GitHub 主页
             </a>
             <a href={`mailto:${siteConfig.author.email}`} class="cyber-btn cyber-btn-pink">
-              发送神经电讯 ({siteConfig.author.email})
+              发送邮件 ({siteConfig.author.email})
             </a>
             <a href="/rss.xml" class="cyber-btn">
-              RSS 订阅源
+              RSS 订阅
             </a>
           </div>
         </div>
@@ -41,12 +41,12 @@ import { siteConfig } from '../data/siteConfig';
     </section>
 
     <div class="about-dual-grid">
-      <!-- Skill Matrix -->
+      <!-- Tech Stack Matrix -->
       <section class="hud-box spec-panel">
         <div class="section-header">
           <h2 class="section-title">
             <span class="prefix">01</span>
-            <span>神经技能矩阵 · 同步率遥测</span>
+            <span>常用技术栈与工具</span>
           </h2>
         </div>
 
@@ -65,12 +65,12 @@ import { siteConfig } from '../data/siteConfig';
         </div>
       </section>
 
-      <!-- Evolution Timeline -->
+      <!-- Timeline -->
       <section class="hud-box spec-panel">
         <div class="section-header">
           <h2 class="section-title">
             <span class="prefix">02</span>
-            <span>数字演进轨迹 · 研发时间线</span>
+            <span>开发经历与折腾足迹</span>
           </h2>
         </div>
 
@@ -110,8 +110,8 @@ import { siteConfig } from '../data/siteConfig';
 
   .holo-frame {
     position: relative;
-    width: 170px;
-    height: 170px;
+    width: 160px;
+    height: 160px;
     border: 2px solid var(--neon-cyan);
     background: radial-gradient(circle, rgba(0, 243, 255, 0.18), rgba(6, 7, 11, 0.95));
     display: flex;
@@ -122,11 +122,11 @@ import { siteConfig } from '../data/siteConfig';
   }
 
   .holo-code {
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: 1.45rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1.55rem;
     color: var(--neon-cyan);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.04em;
     text-shadow: 0 0 12px var(--neon-cyan);
   }
 
@@ -155,9 +155,10 @@ import { siteConfig } from '../data/siteConfig';
 
   .author-name {
     font-family: var(--font-display);
-    font-size: 2.2rem;
+    font-size: 2rem;
     font-weight: 900;
     color: #fff;
+    margin-bottom: 0.25rem;
   }
 
   .author-role {

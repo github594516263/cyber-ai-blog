@@ -8,20 +8,20 @@ const allPosts = (await getCollection('blog')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
-const categories = ['ALL', 'AI_AGENT', 'LLM_ARCH', 'EDGE_COMPUTE', 'CYBER_UI', 'NEURAL_THOUGHTS'];
+const categories = ['ALL', 'FRONTEND', 'BACKEND', 'AI_PRACTICE', 'LIFE'];
 const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags))];
 ---
 
-<BaseLayout title={`文章归档 · ${siteConfig.title}`} description="全部 Markdown 神经归档日志与 AI 研究笔记">
+<BaseLayout title={`文章归档 · ${siteConfig.title}`} description="全部技术笔记与生活随笔归档">
   <div class="cyber-container">
     <header class="cyber-panel archive-hero">
       <div class="archive-hero-top">
-        <span class="cyber-badge cyber-badge-pink">存储扇区 · 神经日志归档</span>
-        <span class="count-indicator">当前匹配节点：<strong id="visible-count">{allPosts.length}</strong> / {allPosts.length} 篇</span>
+        <span class="cyber-badge cyber-badge-pink">文章归档 · 技术与生活</span>
+        <span class="count-indicator">当前展示：<strong id="visible-count">{allPosts.length}</strong> / 共 {allPosts.length} 篇</span>
       </div>
-      <h1 class="archive-title">记忆库检索 · 全部文章归档</h1>
+      <h1 class="archive-title">全部文章归档</h1>
       <p class="archive-desc">
-        所有文章均以纯文本 <code>Markdown</code> 编写，并经由 <code>中枢智脑 Ω</code> 提取结构化摘要与向量标签。
+        记录前端开发、后端与架构、AI 提效实践以及日常随笔。所有文章均使用纯文本 <code>Markdown</code> 编写。
       </p>
 
       <!-- Interactive Filter Console -->
@@ -31,7 +31,7 @@ const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags))];
           <input
             id="archive-search-input"
             type="text"
-            placeholder="输入关键词实时过滤标题、标签或 AI 摘要..."
+            placeholder="输入关键词实时搜索文章标题、标签或摘要..."
           />
         </div>
 
@@ -71,8 +71,8 @@ const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags))];
     </div>
 
     <div id="no-results-box" class="hud-box no-results hidden">
-      <p>[404 记忆缺失] 未找到匹配当前筛选条件的神经元日志。</p>
-      <button id="reset-filters-btn" type="button" class="cyber-btn">重置全部筛选条件</button>
+      <p>没有找到符合当前筛选条件的文章。</p>
+      <button id="reset-filters-btn" type="button" class="cyber-btn">重置筛选条件</button>
     </div>
   </div>
 </BaseLayout>
