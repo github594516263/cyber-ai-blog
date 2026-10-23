@@ -41,9 +41,39 @@ const navItems = [
         <kbd class="trigger-kbd">⌘K</kbd>
       </button>
 
-      <button id="toggle-theme-btn" class="hud-icon-btn" type="button" title="切换赛博青/矩阵绿主题">
-        <span id="theme-label">赛博青</span>
-      </button>
+      <!-- 主题下拉选择器 -->
+      <div class="theme-dropdown" id="theme-dropdown">
+        <button
+          id="theme-dropdown-trigger"
+          class="hud-icon-btn theme-trigger-btn"
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+          title="选择主题风格"
+        >
+          <span id="theme-swatch-current" class="swatch swatch-cyber"></span>
+          <span id="theme-label">赛博青</span>
+          <span class="dropdown-caret">▾</span>
+        </button>
+
+        <div id="theme-dropdown-menu" class="theme-dropdown-menu hidden" role="menu">
+          <button type="button" class="theme-option" data-theme="cyber" role="menuitem">
+            <span class="swatch swatch-cyber"></span>
+            <span class="opt-text">赛博青</span>
+            <span class="opt-desc">暗黑霓虹</span>
+          </button>
+          <button type="button" class="theme-option" data-theme="matrix" role="menuitem">
+            <span class="swatch swatch-matrix"></span>
+            <span class="opt-text">矩阵绿</span>
+            <span class="opt-desc">黑客帝国</span>
+          </button>
+          <button type="button" class="theme-option" data-theme="daylight" role="menuitem">
+            <span class="swatch swatch-daylight"></span>
+            <span class="opt-text">白昼赛博</span>
+            <span class="opt-desc">洁净表面</span>
+          </button>
+        </div>
+      </div>
 
       <button id="toggle-crt-btn" class="hud-icon-btn" type="button" title="开关 CRT 扫描线滤镜">
         <span>扫描线</span>
@@ -57,9 +87,10 @@ const navItems = [
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(6, 7, 11, 0.88);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(0, 243, 255, 0.22);
+    background: rgba(8, 11, 18, 0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0, 243, 255, 0.14);
   }
 
   .header-inner {
@@ -74,7 +105,7 @@ const navItems = [
   .brand-logo {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.75rem;
     text-decoration: none;
     flex-shrink: 0;
     white-space: nowrap;
@@ -86,13 +117,19 @@ const navItems = [
     justify-content: center;
     font-family: var(--font-mono);
     font-weight: 700;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     color: var(--neon-cyan);
-    background: rgba(0, 243, 255, 0.1);
-    border: 1px solid rgba(0, 243, 255, 0.4);
-    padding: 0.35rem 0.65rem;
-    text-shadow: 0 0 10px var(--neon-cyan-glow);
+    background: var(--neon-cyan-dim);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    border-radius: 8px;
+    padding: 0.38rem 0.65rem;
     white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+
+  .brand-logo:hover .brand-icon {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 12px var(--neon-cyan-dim);
   }
 
   .brand-text {
@@ -105,8 +142,8 @@ const navItems = [
     font-family: var(--font-display);
     font-weight: 900;
     font-size: 1.08rem;
-    letter-spacing: 0.04em;
-    color: #fff;
+    letter-spacing: 0.03em;
+    color: var(--text-heading);
     line-height: 1.2;
   }
 
@@ -114,17 +151,19 @@ const navItems = [
     font-family: var(--font-mono);
     font-size: 0.68rem;
     color: var(--text-muted);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
   }
 
+  /* 导航菜单：去除生硬的四周边框，采用柔和胶囊底色 + 底部流光指示条 */
   .cyber-nav {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.35rem;
     flex-shrink: 0;
   }
 
   .nav-link {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -133,9 +172,9 @@ const navItems = [
     font-weight: 500;
     color: var(--text-secondary);
     text-decoration: none;
-    padding: 0.45rem 0.9rem;
-    border: 1px solid transparent;
-    transition: all 0.2s ease;
+    padding: 0.48rem 0.95rem;
+    border-radius: 6px;
+    transition: color 0.2s ease, background-color 0.2s ease;
     white-space: nowrap;
     flex-shrink: 0;
   }
@@ -143,21 +182,33 @@ const navItems = [
   .nav-num {
     font-size: 0.72rem;
     color: var(--neon-pink);
-    opacity: 0.85;
+    opacity: 0.8;
+    font-weight: 600;
   }
 
-  .nav-link:hover,
+  .nav-link:hover {
+    color: var(--text-heading);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
   .nav-link.active {
     color: var(--neon-cyan);
-    background: rgba(0, 243, 255, 0.08);
-    border-color: rgba(0, 243, 255, 0.3);
-    text-shadow: 0 0 8px var(--neon-cyan-glow);
+    background: var(--neon-cyan-dim);
+    font-weight: 600;
   }
 
-  .nav-link.active {
-    border-bottom: 2px solid var(--neon-pink);
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
   }
 
+  /* 右侧工具按钮组 */
   .header-actions {
     display: flex;
     align-items: center;
@@ -168,13 +219,15 @@ const navItems = [
   .terminal-trigger {
     display: inline-flex;
     align-items: center;
+    height: 36px;
     gap: 0.45rem;
-    background: rgba(255, 0, 85, 0.1);
-    border: 1px solid rgba(255, 0, 85, 0.45);
-    color: #fff;
+    background: rgba(255, 0, 85, 0.08);
+    border: 1px solid rgba(255, 0, 85, 0.3);
+    border-radius: 6px;
+    color: var(--text-heading);
     font-family: var(--font-mono);
     font-size: 0.8rem;
-    padding: 0.4rem 0.75rem;
+    padding: 0 0.75rem;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
@@ -182,40 +235,140 @@ const navItems = [
   }
 
   .terminal-trigger:hover {
-    background: rgba(255, 0, 85, 0.22);
+    background: rgba(255, 0, 85, 0.15);
     border-color: var(--neon-pink);
-    box-shadow: 0 0 14px var(--neon-pink-glow);
+    box-shadow: 0 4px 12px var(--neon-pink-dim);
   }
 
   .trigger-kbd {
     font-family: var(--font-mono);
     font-size: 0.68rem;
-    padding: 0.1rem 0.35rem;
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.08rem 0.35rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: var(--neon-yellow);
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
   .hud-icon-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 243, 255, 0.06);
-    border: 1px solid rgba(0, 243, 255, 0.25);
-    color: var(--neon-cyan);
+    height: 36px;
+    gap: 0.45rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    border-radius: 6px;
+    color: var(--text-primary);
     font-family: var(--font-mono);
     font-size: 0.78rem;
-    padding: 0.4rem 0.7rem;
+    padding: 0 0.75rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     white-space: nowrap;
     flex-shrink: 0;
   }
 
   .hud-icon-btn:hover {
-    background: var(--neon-cyan);
-    color: #05070c;
+    border-color: var(--neon-cyan);
+    background: var(--neon-cyan-dim);
+    color: var(--neon-cyan);
+  }
+
+  /* 主题下拉菜单：精致悬浮毛玻璃卡片 */
+  .theme-dropdown {
+    position: relative;
+  }
+
+  .dropdown-caret {
+    font-size: 0.7rem;
+    opacity: 0.65;
+    transition: transform 0.2s ease;
+  }
+
+  .theme-dropdown.open .dropdown-caret {
+    transform: rotate(180deg);
+  }
+
+  .theme-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 190px;
+    background: rgba(12, 16, 28, 0.95);
+    border: 1px solid rgba(0, 243, 255, 0.22);
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    padding: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    z-index: 200;
+    backdrop-filter: blur(16px);
+  }
+
+  .theme-dropdown-menu.hidden {
+    display: none;
+  }
+
+  .theme-option {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .theme-option:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--neon-cyan);
+  }
+
+  .theme-option.active {
+    background: var(--neon-cyan-dim);
+    color: var(--neon-cyan);
+    font-weight: 600;
+  }
+
+  .opt-text {
+    flex: 1;
+  }
+
+  .opt-desc {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+  }
+
+  .swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .swatch-cyber {
+    background: #00f3ff;
+    box-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
+  }
+
+  .swatch-matrix {
+    background: #00ff9d;
+    box-shadow: 0 0 8px rgba(0, 255, 157, 0.7);
+  }
+
+  .swatch-daylight {
+    background: #007A87;
+    box-shadow: inset 0 0 0 2px #ffffff, 0 0 0 1px #007A87;
   }
 
   @media (max-width: 900px) {
@@ -239,27 +392,91 @@ const navItems = [
 
 <script>
   const crtBtn = document.getElementById('toggle-crt-btn');
-  const themeBtn = document.getElementById('toggle-theme-btn');
+  const dropdown = document.getElementById('theme-dropdown');
+  const triggerBtn = document.getElementById('theme-dropdown-trigger');
+  const menu = document.getElementById('theme-dropdown-menu');
   const themeLabel = document.getElementById('theme-label');
+  const themeSwatchCurrent = document.getElementById('theme-swatch-current');
+  const optionBtns = document.querySelectorAll('.theme-option');
 
-  if (localStorage.getItem('cyber-crt') === 'off') {
-    document.body.classList.add('crt-off');
-  }
-  if (localStorage.getItem('cyber-theme') === 'matrix') {
-    document.body.classList.add('theme-matrix');
-    if (themeLabel) themeLabel.textContent = '矩阵绿';
+  const themes = [
+    { id: 'cyber', label: '赛博青', className: '', swatchClass: 'swatch-cyber' },
+    { id: 'matrix', label: '矩阵绿', className: 'theme-matrix', swatchClass: 'swatch-matrix' },
+    { id: 'daylight', label: '白昼赛博', className: 'theme-daylight', swatchClass: 'swatch-daylight' },
+  ];
+
+  function applyTheme(themeId: string) {
+    const root = document.documentElement;
+    root.classList.remove('theme-matrix', 'theme-daylight');
+    const found = themes.find((t) => t.id === themeId) || themes[0];
+    if (found.className) {
+      root.classList.add(found.className);
+    }
+    if (themeLabel) {
+      themeLabel.textContent = found.label;
+    }
+    if (themeSwatchCurrent) {
+      themeSwatchCurrent.className = `swatch ${found.swatchClass}`;
+    }
+    optionBtns.forEach((btn) => {
+      btn.classList.toggle('active', btn.getAttribute('data-theme') === found.id);
+    });
+    localStorage.setItem('cyber-theme', found.id);
   }
 
-  crtBtn?.addEventListener('click', () => {
-    document.body.classList.toggle('crt-off');
-    const isOff = document.body.classList.contains('crt-off');
-    localStorage.setItem('cyber-crt', isOff ? 'off' : 'on');
+  (window as any).__cycleCyberTheme = () => {
+    const current = localStorage.getItem('cyber-theme') || 'cyber';
+    const idx = themes.findIndex((t) => t.id === current);
+    const next = themes[(idx + 1) % themes.length];
+    applyTheme(next.id);
+    return next.label;
+  };
+
+  const savedTheme = localStorage.getItem('cyber-theme') || 'cyber';
+  applyTheme(savedTheme);
+
+  function closeDropdown() {
+    menu?.classList.add('hidden');
+    dropdown?.classList.remove('open');
+    triggerBtn?.setAttribute('aria-expanded', 'false');
+  }
+
+  triggerBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isHidden = menu?.classList.contains('hidden');
+    if (isHidden) {
+      menu?.classList.remove('hidden');
+      dropdown?.classList.add('open');
+      triggerBtn.setAttribute('aria-expanded', 'true');
+    } else {
+      closeDropdown();
+    }
   });
 
-  themeBtn?.addEventListener('click', () => {
-    document.body.classList.toggle('theme-matrix');
-    const isMatrix = document.body.classList.contains('theme-matrix');
-    localStorage.setItem('cyber-theme', isMatrix ? 'matrix' : 'cyber');
-    if (themeLabel) themeLabel.textContent = isMatrix ? '矩阵绿' : '赛博青';
+  optionBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const selected = btn.getAttribute('data-theme') || 'cyber';
+      applyTheme(selected);
+      closeDropdown();
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (dropdown && !dropdown.contains(e.target as Node)) {
+      closeDropdown();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeDropdown();
+    }
+  });
+
+  crtBtn?.addEventListener('click', () => {
+    const root = document.documentElement;
+    root.classList.toggle('crt-off');
+    const isOff = root.classList.contains('crt-off');
+    localStorage.setItem('cyber-crt', isOff ? 'off' : 'on');
   });
 </script>

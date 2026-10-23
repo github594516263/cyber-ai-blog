@@ -26,6 +26,22 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="alternate" type="application/rss+xml" title={siteConfig.title} href="/rss.xml" />
+
+    <!-- 防闪烁脚本：在首屏渲染前同步设置 html 主题类，彻底消除切换页面或刷新时的黑屏闪烁 -->
+    <script is:inline>
+      (function () {
+        try {
+          var theme = localStorage.getItem('cyber-theme') || 'cyber';
+          var root = document.documentElement;
+          root.classList.remove('theme-matrix', 'theme-daylight');
+          if (theme === 'matrix') root.classList.add('theme-matrix');
+          if (theme === 'daylight') root.classList.add('theme-daylight');
+          if (localStorage.getItem('cyber-crt') === 'off') {
+            root.classList.add('crt-off');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- CRT Scanline Layer -->
@@ -61,7 +77,6 @@ const {
     </style>
 
     <script>
-      // Lightweight 60fps Neural Synapse Background Canvas
       const canvas = document.getElementById('neural-bg-canvas') as HTMLCanvasElement | null;
       if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -73,12 +88,12 @@ const {
           height = canvas.height = window.innerHeight;
         });
 
-        const nodeCount = Math.min(38, Math.floor(width / 36));
+        const nodeCount = Math.min(36, Math.floor(width / 38));
         const nodes = Array.from({ length: nodeCount }, () => ({
           x: Math.random() * width,
           y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.35,
-          vy: (Math.random() - 0.5) * 0.35,
+          vx: (Math.random() - 0.5) * 0.32,
+          vy: (Math.random() - 0.5) * 0.32,
           r: Math.random() * 1.5 + 1,
         }));
 
@@ -86,8 +101,12 @@ const {
           if (!ctx) return;
           ctx.clearRect(0, 0, width, height);
 
-          const isMatrix = document.body.classList.contains('theme-matrix');
-          const rgb = isMatrix ? '0, 255, 157' : '0, 243, 255';
+          const root = document.documentElement;
+          const isMatrix = root.classList.contains('theme-matrix');
+          const isDaylight = root.classList.contains('theme-daylight');
+          const rgb = isDaylight ? '0, 122, 135' : isMatrix ? '0, 255, 157' : '0, 243, 255';
+          const nodeAlpha = isDaylight ? 0.35 : 0.55;
+          const lineAlpha = isDaylight ? 0.1 : 0.16;
 
           for (let i = 0; i < nodes.length; i++) {
             const a = nodes[i];
@@ -99,7 +118,7 @@ const {
 
             ctx.beginPath();
             ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${rgb}, 0.55)`;
+            ctx.fillStyle = `rgba(${rgb}, ${nodeAlpha})`;
             ctx.fill();
 
             for (let j = i + 1; j < nodes.length; j++) {
@@ -111,7 +130,7 @@ const {
                 ctx.beginPath();
                 ctx.moveTo(a.x, a.y);
                 ctx.lineTo(b.x, b.y);
-                ctx.strokeStyle = `rgba(${rgb}, ${(1 - dist / 150) * 0.16})`;
+                ctx.strokeStyle = `rgba(${rgb}, ${(1 - dist / 150) * lineAlpha})`;
                 ctx.lineWidth = 0.8;
                 ctx.stroke();
               }

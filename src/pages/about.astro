@@ -113,12 +113,13 @@ import { siteConfig } from '../data/siteConfig';
     width: 160px;
     height: 160px;
     border: 2px solid var(--neon-cyan);
-    background: radial-gradient(circle, rgba(0, 243, 255, 0.18), rgba(6, 7, 11, 0.95));
+    border-radius: 16px;
+    background: radial-gradient(circle, var(--neon-cyan-dim), var(--bg-inset));
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    box-shadow: 0 0 25px rgba(0, 243, 255, 0.25);
+    box-shadow: 0 8px 25px var(--neon-cyan-dim);
   }
 
   .holo-code {

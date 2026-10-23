@@ -329,13 +329,9 @@ const searchIndex = allPosts
       return;
     }
 
-    if (cmd === '/切换主题' || cmd === '/matrix' || cmd === 'matrix') {
-      document.body.classList.toggle('theme-matrix');
-      const isMatrix = document.body.classList.contains('theme-matrix');
-      localStorage.setItem('cyber-theme', isMatrix ? 'matrix' : 'cyber');
-      const themeLabel = document.getElementById('theme-label');
-      if (themeLabel) themeLabel.textContent = isMatrix ? '矩阵绿' : '赛博青';
-      output.innerHTML = `<div class="term-cli-box">已切换全站主题配色为：${isMatrix ? '矩阵荧光绿 (#00ff9d)' : '赛博电光青 (#00f3ff)'}</div>`;
+    if (cmd === '/切换主题' || cmd === '/matrix' || cmd === 'matrix' || cmd === '/daylight') {
+      const nextLabel = (window as any).__cycleCyberTheme?.() || '';
+      output.innerHTML = `<div class="term-cli-box">已切换全站主题配色为：${nextLabel}</div>`;
       return;
     }
 
